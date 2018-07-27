@@ -16,6 +16,7 @@ config.py
 
 ## License
 
+<pre>
 Emoji Connoisseur Website provides a list of emotes in HTML form.
 Copyright © 2018 Benjamin Mintz
 
@@ -31,3 +32,4 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+</pre>
