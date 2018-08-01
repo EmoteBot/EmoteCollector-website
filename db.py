@@ -7,13 +7,11 @@ import psycopg2
 import psycopg2.extras
 
 
-
 def iter_from_query(query, *args):
 	"""return an iterator from a query that retrieves multiple records"""
 	with db.cursor() as cursor:
 		cursor.execute(query, args)
 		yield from cursor
-
 
 def format_sql_conditions(conditions):
 	"""format a sequence of SQL predicates as a single WHERE clause"""
@@ -21,6 +19,24 @@ def format_sql_conditions(conditions):
 		return ''
 	return 'WHERE ' + ' AND '.join(conditions) + ' '
 
+def emote(name):
+	with db.cursor() as cursor:
+		cursor.execute("""
+			SELECT *
+			FROM emote
+			WHERE LOWER(name) = LOWER(%s)
+		""", (name,))
+		return cursor.fetchone()
+
+def usage(id):
+	with db.cursor() as cursor:
+		cursor.execute("""
+			SELECT COUNT(*) AS usage
+			FROM emote_usage_history
+			WHERE id = %s
+			AND time > (CURRENT_TIMESTAMP - INTERVAL '4 weeks')
+		""", (id,))
+		return cursor.fetchone()['usage']
 
 def emotes(author_id=None):
 	"""return an iterator that gets emotes from the database.
@@ -37,8 +53,7 @@ def emotes(author_id=None):
 	query += 'ORDER BY LOWER(name)'
 	return iter_from_query(query, *args)
 
-
-def get_db():
+def _get_db():
 	global config
 
 	with open('config.py') as config_file:
@@ -46,16 +61,14 @@ def get_db():
 		credentials = config.pop('database')
 
 	# pylint: disable=invalid-name
-	db = psycopg2.connect(**credentials, cursor_factory=psycopg2.extras.DictCursor)
+	db = psycopg2.connect(**credentials, cursor_factory=psycopg2.extras.RealDictCursor)
 	db.autocommit = True
 	return db
-
 
 def load_json_compat(data: str):
 	"""evaluate a python dictionary/list/thing, while maintaining compatibility some compatibility with JSON"""
 	globals = dict(true=True, false=False, null=None)
 	return eval(data, globals)
 
-
 # hides the temporary variables like credentials and config_file
-db = get_db()  # pylint: disable=invalid-name
+db = _get_db()  # pylint: disable=invalid-name
