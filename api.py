@@ -3,7 +3,7 @@
 
 from datetime import datetime
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_restful import (
 	abort,
 	fields,
@@ -15,6 +15,10 @@ from flask_restful.reqparse import RequestParser
 import db
 
 app = Flask('emoji connoisseur API')
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+app.jinja_env.globals['filter'] = filter
+
 api = API(app, prefix='/api/v0')
 
 class EmojiConnoisseurDateTime(fields.Raw):
@@ -76,3 +80,15 @@ class PopularEmotes(Resource):
 		return list(db.popular()) or abort(404, 'No emotes have been added to the bot yet.')
 
 api.add_resource(PopularEmotes, '/popular')
+
+
+@app.route(api.prefix+'/docs')
+def api_docs():
+	return render_template('api_doc.html',
+		urls=(
+			db.config.get('url'),
+			db.config['onions'].get(2),
+			db.config['onions'].get(3),
+		),
+		api_prefix=api.prefix,
+	)

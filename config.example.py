@@ -1,4 +1,8 @@
 {
+	# the url of your instance.
+	# must not have a trailing slash.
+	'url': 'https://emoji-connoisseur.python-for.life',
+
 	'onions': {
 		# tor onion services for your instance
 		# if left blank, the links to these will not be shown from the clearnet site.

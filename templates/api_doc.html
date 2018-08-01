@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+{% set title = "Emoji Connoisseur API docs" %}
+<title>{{ title }}</title>
+</head>
+<body>
+	<h1>{{ title }}</h1>
+	<h2>Base URL</h2>
+	<p>
+		The base URL for all endpoints shall be one of:
+		<ul>{% for url in filter(None, urls) %}
+			<a class="api_url">{{ url }}{{ api_prefix }}</a>
+		{% endfor %}</ul>
+	</p>
+</body>
+</html>
