@@ -41,7 +41,7 @@ def usage(id):
 def emotes(author_id=None):
 	"""return an iterator that gets emotes from the database.
 	If author id is provided, get only emotes from them.
-	If include_nsfw, list all emotes."""
+	"""
 	query = 'SELECT * FROM emote '
 	conditions = []
 	args = []
@@ -52,6 +52,27 @@ def emotes(author_id=None):
 	query += format_sql_conditions(conditions)
 	query += 'ORDER BY LOWER(name)'
 	return iter_from_query(query, *args)
+
+def search(substring):
+	"""return an iterator that gets emotes from the database whose name contains `query`."""
+	return iter_from_query("""
+		SELECT *
+		FROM emote
+		WHERE str_contains(LOWER(%s), LOWER(name))
+		ORDER BY LOWER(name)
+	""", substring)
+
+def popular():
+	return iter_from_query("""
+		SELECT *, (
+			SELECT COUNT(*)
+			FROM emote_usage_history
+			WHERE id = emote.id
+			AND time > (CURRENT_TIMESTAMP - INTERVAL '4 weeks')
+		) AS usage
+		FROM emote
+		ORDER BY usage DESC, LOWER("name")
+	""")
 
 def _get_db():
 	global config

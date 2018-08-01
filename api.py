@@ -36,6 +36,11 @@ EMOTE_FIELDS = {
 	'description': fields.String,
 }
 
+EMOTE_WITH_POPULARITY = {
+	**EMOTE_FIELDS,
+	'usage': fields.Integer,
+}
+
 class Emote(Resource):
 	@marshal_with(EMOTE_WITH_POPULARITY)
 	def get(self, name):
@@ -54,14 +59,20 @@ class List(Resource):
 		parser = RequestParser()
 		parser.add_argument('author', type=int, default=None)
 		args = parser.parse_args()
-		return list(map(dict, db.emotes(args.author)))
+		return list(db.emotes(args.author)) or abort(404, message='No emotes have been added to the bot yet.')
 
 api.add_resource(List, '/emotes')
 
-
-class Emote(Resource):
+class SearchResults(Resource):
 	@marshal_with(EMOTE_FIELDS)
-	def get(self, name):
-		return dict(db.emote(name))
+	def get(self, query):
+		return list(db.search(query)) or abort(404, message='No emotes were found matching your query.')
 
-api.add_resource(Emote, '/emote/<string:name>')
+api.add_resource(SearchResults, '/search/<string:query>')
+
+class PopularEmotes(Resource):
+	@marshal_with(EMOTE_WITH_POPULARITY)
+	def get(self):
+		return list(db.popular()) or abort(404, 'No emotes have been added to the bot yet.')
+
+api.add_resource(PopularEmotes, '/popular')
