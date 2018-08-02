@@ -1,18 +1,87 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset=utf-8>
-{% set title = "Emoji Connoisseur API docs" %}
-<title>{{ title }}</title>
-</head>
-<body>
-	<h1>{{ title }}</h1>
+{% extends 'base.html' %}
+
+{%block title %}Emoji Connoisseur API docs{% endblock %}
+
+{% block content %}
+	{{ super() }}
 	<h2>Base URL</h2>
+	The base URL for all endpoints shall be one of:
+	<ul>{% for url in filter(None, urls) %}
+		<li><a class="api-url">{{ url }}{{ api_prefix }}</a></li>
+	{% endfor %}</ul>
+
+	<h2>General Information</h2>
 	<p>
-		The base URL for all endpoints shall be one of:
-		<ul>{% for url in filter(None, urls) %}
-			<a class="api_url">{{ url }}{{ api_prefix }}</a>
-		{% endfor %}</ul>
+		All responses are in JSON form.
 	</p>
-</body>
-</html>
+
+	<h2>Objects and Data Types</h2>
+	<p>
+		A <code>?</code> following the name of a field indicates that it may be null.
+	</p>
+
+	<h3 id=ec-datetime>Emoji Connoisseur Date Time</h3>
+	<p>
+		All times are recorded in seconds (without leap seconds) since the Emoji Connoisseur Epoch, which is the first second of 2018-08-15, UTC.
+		In Unix time, that's 1518652800.<br>
+	</p>
+
+	<h3 id=emote-object>Emote</h3>
+	<table class="fields">
+		{% set fields_header %}
+		<thead><tr>
+			<th>Field name
+			<th>Type
+			<th>Description
+		</tr></thead>
+		{% endset %}
+		{{ fields_header }}
+		<tr> <td>name <td>String <td>
+		<tr> <td>id <td>String <td>represents a Discord snowflake
+		<tr> <td>author <td>String <td>represents the author's Discord ID
+		<tr> <td>animated <td>Boolean</td> <td>
+		<tr>
+			<td>created
+			<td><a href="#ec-datetime">Emoji Connoisseur Date Time</a>
+			<td>
+		<tr>
+			<td>modified?
+			<td><a href="#ec-datetime">Emoji Connoisseur Date Time</a>
+			<td>
+		<tr> <td>preserve <td>Boolean <td>whether to prevent this emote from being removed if it goes unused
+		<tr> <td>description? <td>String <td>
+	</table>
+
+	<h3 id=emote-with-usage-object>Emote with Usage</h3>
+	Fields: everything in <a href="#emote-object">Emote</a>, plus:
+	<table class="fields">
+		{{ fields_header }}
+		<tr> <td>usage <td>Integer <td>how many times the emote was used in the past 4 weeks
+	</table>
+
+	<h2>Endpoints</h2>
+
+	<h3 class="endpoint">/emote/{emote.name}</h3>
+	<p>
+		Methods: <span class="http-method">GET</span><br>
+		Result: One <a href="#emote-with-usage-object">emote with usage object</a>, or 404 if not found.
+	</p>
+
+	<h3 class="endpoint">/emotes</h3>
+	<p>
+		Methods: <span class="http-method">GET</span><br>
+		Result: List of <a href="#emote-object">emote objects</a>, or 404 if no emotes have been created yet.
+	</p>
+
+	<h3 class="endpoint">/search/{query}</h3>
+	<p>
+		Methods: <span class="http-method">GET</span><br>
+		Result: List of <a href="#emote-object">emote objects</a> whose name case-insensitively includes {query}.
+	</p>
+
+	<h3 class="endpoint">/popular</h3>
+	<p>
+		Methods: <span class="http-method">GET</span><br>
+		Result: List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity.
+	</p>
+{% endblock %}
