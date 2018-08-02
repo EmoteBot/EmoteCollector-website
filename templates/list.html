@@ -18,10 +18,10 @@
 		<p>
 			Now available as a
 			{% if v2_onion %}
-				<a href="{{ v2_onion }}">v2</a>
+				<a href="{{ v2_onion }}{{ request.path }}">v2</a>
 			{% endif %}
 			{% if v3_onion %}
-				<a href="{{ v3_onion }}">v3</a>
+				<a href="{{ v3_onion }}{{ request.path }}">v3</a>
 			{% endif %}
 			Tor .onion service!
 		</p>

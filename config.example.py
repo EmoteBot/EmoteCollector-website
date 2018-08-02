@@ -4,10 +4,10 @@
 	'url': 'https://emoji-connoisseur.python-for.life',
 
 	'onions': {
-		# tor onion services for your instance
+		# tor onion services for your instance without a trailing slash
 		# if left blank, the links to these will not be shown from the clearnet site.
-		2: '', # example: 'http://emotesqil3yd4zb3.onion/list'
-		3: '', # example: 'http://emotesdikhisgxdcmh7wtlvzfw2yxp4vmkyy6mu5wixzgqfmxvuotryd.onion/list'
+		2: '', # example: 'http://emotesqil3yd4zb3.onion'
+		3: '', # example: 'http://emotesdikhisgxdcmh7wtlvzfw2yxp4vmkyy6mu5wixzgqfmxvuotryd.onion'
 	},
 
 	'database': {

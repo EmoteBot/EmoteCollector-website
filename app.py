@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-from flask import Flask, Response
+from flask import Flask, Response, request
 
 import db
 
