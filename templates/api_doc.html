@@ -27,7 +27,7 @@
 	</p>
 
 	<h3 id=emote-object>Emote</h3>
-	<table class="fields">
+	<div class=table-container><table class="fields">
 		{% set fields_header %}
 		<thead><tr>
 			<th>Field name
@@ -50,14 +50,14 @@
 			<td>
 		<tr> <td>preserve <td>Boolean <td>whether to prevent this emote from being removed if it goes unused
 		<tr> <td>description? <td>String <td>
-	</table>
+	</table></div>
 
 	<h3 id=emote-with-usage-object>Emote with Usage</h3>
 	Fields: everything in <a href="#emote-object">Emote</a>, plus:
-	<table class="fields">
+	<div class=table-container><table class="fields">
 		{{ fields_header }}
 		<tr> <td>usage <td>Integer <td>how many times the emote was used in the past 4 weeks
-	</table>
+	</table></div>
 
 	<h2>Endpoints</h2>
 
