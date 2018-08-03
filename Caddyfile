@@ -14,7 +14,7 @@ localhost:2018 ec.localhost:2018 127.0.01:2018 [0:0:0:0:0:0:0:1]:2018 {
 }
 
 # allow ngrok for dev
-*.ngrok.io:443 *.ngrok.io:80 {
+*.ngrok.io:2018 {
 	import conf
 	tls off
 }
