@@ -61,23 +61,28 @@
 
 	<h2>Endpoints</h2>
 
-	<h3 class="endpoint"><span class=http-method>GET</span> /emote/{emote.name}</h3>
+	{% macro endpoint(title, slug, method, url) %}
+	<h3 class=http-req-title id="{{ slug }}">{{ title }}</h3>
+	<span class=http-req><span class=http-method>{{ method }}</span> {{ url }}</span>
 	<p>
+		{{ caller() }}
+	</p>
+	{% endmacro %}
+
+	{% call endpoint('Get Emote', 'get-emote', 'GET', '/emote/{name}') %}
 		One <a href="#emote-with-usage-object">emote with usage object</a>, or 404 if not found.
-	</p>
+	{% endcall %}
 
-	<h3 class="endpoint"><span class=http-method>GET</span>/emotes</h3>
-	<p>
+	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes') %}
 		List of <a href="#emote-object">emote objects</a>, or 404 if no emotes have been created yet.
-	</p>
+	{% endcall %}
 
-	<h3 class="endpoint"><span class=http-method>GET</span> /search/{query}</h3>
-	<p>
+	{% call endpoint('Search Emotes', 'search-emotes', 'GET', '/search/{query}') %}
 		List of <a href="#emote-object">emote objects</a> whose name case-insensitively includes {query}.
-	</p>
+	{% endcall %}
 
-	<h3 class="endpoint"><span class=htt-method>GET</span> /popular</h3>
-	<p>
-		Result: List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity.
-	</p>
+	{% call endpoint('List Popular Emotes', 'list-popular-emotes', 'GET', '/popular') %}
+		List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity.
+	{% endcall %}
+
 {% endblock %}
