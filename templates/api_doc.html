@@ -25,13 +25,22 @@
 		A <code>?</code> following the name of a field indicates that it may be null.
 	</p>
 
-	<h3 id=ec-datetime>Emoji Connoisseur Date Time</h3>
+	{% macro linked_header(title, slug, level=3) %}
+	<h{{ level }} id="{{ slug }}">
+		{{ title }}
+		<a href="#{{ slug }}" class="header-link">
+			<img src=/img/link.png>
+		</a>
+	</h3>
+	{% endmacro %}
+
+	{{ linked_header('Emoji Connoisseur Date Time', 'ec-datetime') }}
 	<p>
 		All times are recorded in seconds (without leap seconds) since the Emoji Connoisseur Epoch, which is the first second of 2018-02-15, UTC.
 		In Unix time, that's 1518652800.
 	</p>
 
-	<h3 id=emote-object>Emote</h3>
+	{{ linked_header('Emote', 'emote-object') }}
 	<div class=table-container><table class="fields">
 		{% set fields_header %}
 		<thead><tr>
@@ -57,7 +66,7 @@
 		<tr> <td>description? <td>String <td>
 	</table></div>
 
-	<h3 id=emote-with-usage-object>Emote with Usage</h3>
+	{{ linked_header('Emote with Usage', 'emote-with-usage-object') }}
 	Fields: everything in <a href="#emote-object">Emote</a>, plus:
 	<div class=table-container><table class="fields">
 		{{ fields_header }}
@@ -66,13 +75,16 @@
 
 	<h2>Endpoints</h2>
 
-	{% macro endpoint(title, slug, method, url) %}
+	{% macro endpoint(title, slug, method, url, authed=False) %}
 	<h3 class=http-req-title id="{{ slug }}">
 		{{ title }}
 		<a href="#{{ slug }}" class=header-link><img src=/img/link.png></a>
 	</h3>
 	<span class=http-req><span class=http-method>{{ method }}</span> {{ url }}</span>
 	<p>
+		{% if authed %}
+			Requires authorization.<br>
+		{% endif %}
 		{{ caller() }}
 	</p>
 	{% endmacro %}
@@ -81,16 +93,35 @@
 		One <a href="#emote-with-usage-object">emote with usage object</a>, or 404 if not found.
 	{% endcall %}
 
+	{% call endpoint('Create Emote', 'create-emote', 'POST', '/emote/{name}/{url}', authed) %}
+		Creates a new emote with name <code>{name}</code> and url <code>{url}</code>.<br>
+		Returns the <a href="#emote-object">emote object</a> that was created on success.
+	{% endcall %}
+
+	{% call endpoint('Edit Emote', 'edit-emote', 'PATCH', '/emote/{name}', authed) %}
+		Requires JSON data:
+		<div class=table-container><table class=fields>
+			{{ fields_header }}
+			<tr> <td> name <td> string <td> new name for the emote
+			<tr> <td> description? <td> string <td> new description for the emote, or null to delete the description
+		</table></div>
+	{% endcall %}
+
+	{% call endpoint('Delete Emote', 'delete-emote', 'DELETE', '/emote/{name}', authed) %}
+		One <a href="#emote-object">emote object</a> that was deleted on success.
+	{% endcall %}
+
 	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes') %}
 		List of <a href="#emote-object">emote objects</a>, or 404 if no emotes have been created yet.
 	{% endcall %}
 
 	{% call endpoint('Search Emotes', 'search-emotes', 'GET', '/search/{query}') %}
-		List of <a href="#emote-object">emote objects</a> whose name case-insensitively includes {query}.
+		List of <a href="#emote-object">emote objects</a> whose name case-insensitively includes <code>{query}</code>.
 	{% endcall %}
 
 	{% call endpoint('List Popular Emotes', 'list-popular-emotes', 'GET', '/popular') %}
-		List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity.
+		List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity, or 404
+		if no emotes have been created yet.
 	{% endcall %}
 
 {% endblock %}
