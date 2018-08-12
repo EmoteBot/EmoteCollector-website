@@ -4,3 +4,7 @@
 
 .http-method {
 	color: hsl(277, 54%, 55%);}
+
+.header-link > img {
+	max-width: 0.8em;
+	max-height: 0.8em;}
