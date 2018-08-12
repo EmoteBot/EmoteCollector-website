@@ -8,6 +8,7 @@ import json
 from aiohttp import web
 from emoji_connoisseur import EmojiConnoisseur
 from emoji_connoisseur.utils import errors as emoji_connoisseur_errors
+import jinja2
 
 from db import config
 
@@ -26,54 +27,81 @@ app = web.Application()
 routes = web.RouteTableDef()
 api_prefix = '/api/v0'
 
+environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
+environment.globals['filter'] = filter
 
+def db_route(func):
+	async def wrapped(request):
+		try:
+			return await func(request)
+		except emoji_connoisseur_errors.EmoteNotFoundError:
+			raise HTTPNotFound('emote does not exist')
+		except emoji_connoisseur_errors.NoMoreSlotsError:
+			raise HTTPInternalServiceError('no more slots')
+
+	return wrapped
 
 def requires_auth(func):
+	func = db_route(func)
+
 	async def authed_route(request):
 		token = request.headers.get('Authorization')
 		if not token:
 			raise HTTPUnauthorized('no token provided')
-		user_id, secret = await api_cog.validate_token(token.encode())
+		user_id = await api_cog.validate_token(token.encode())
 		if not user_id:
 			raise HTTPUnauthorized('invalid or incorrect token provided')
 
+		request.user_id = user_id
+
 		try:
-			return await func(request, user_id=user_id)
+			return await func(request)
 		except emoji_connoisseur_errors.EmoteExistsError:
 			raise HTTPBadRequest('emote exists')
 		except emoji_connoisseur_errors.PermissionDeniedError:
 			raise HTTPUnauthorized('you do not have permission to modify this emote')
-		except emoji_connoisseur_errors.EmoteNotFoundError:
-			raise HTTPNotFound('emote exists')
-		except emoji_connoisseur_errors.NoMoreSlotsError:
-			raise HTTPInternalServiceError('no more slots')
 
 	return authed_route
 
 @routes.patch(api_prefix+'/emote/{name}')
 @requires_auth
-async def rename(request, *, user_id):
+async def rename(request):
 	json = await request.json()
 	old_name = request.match_info['name']
 	new_name = json['new_name']
+	user_id = request.user_id
 
-	return json_response(await db_cog.rename_emote(old_name, new_name, user_id))
+	return emote_response(await db_cog.rename_emote(old_name, new_name, user_id))
+
+@routes.get(api_prefix+'/emote/{name}')
+@db_route
+async def emote(request):
+	return emote_response(await db_cog.get_emote(request.match_info['name']))
+
+@routes.get(api_prefix+'/docs')
+async def docs(request):
+	return render_template('api_doc.html')
 
 app.add_routes(routes)
 
-class EmojiConnoisseurDateTimeEncoder(json.JSONEncoder):
+def _marshal_emote(emote):
 	EPOCH = 1518652800  # February 15, 2018, the date of the first emote
 	MAX_JSON_INT = 2**53
 
-	def default(self, obj):
-		if isinstance(obj, datetime):
-			return int(obj.timestamp()) - self.EPOCH
-		if isinstance(obj, int) and obj > self.MAX_JSON_INT:
-			return str(obj)  # JSON compat
-		return super().default(obj)
+	for key, value in emote.copy().items():
+		if isinstance(value, int) and value > MAX_JSON_INT:
+			emote[key] = str(value)
+		if isinstance(value, datetime):
+			emote[key] = int(value.timestamp()) - EPOCH
 
-def json_response(obj):
-	return web.Response(text=json.dumps(obj, cls=EmojiConnoisseurDateTimeEncoder))
+def emote_response(emote):
+	_marshal_emote(emote)
+	return web.Response(text=json.dumps(emote))
+
+def render_template(template, **kwargs):
+	return web.Response(
+		text=environment.get_template(template).render(**kwargs),
+		content_type='text/html')
 
 class JSONHTTPError(web.HTTPException):
 	def __init__(self, reason):
