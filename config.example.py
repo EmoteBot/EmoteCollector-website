@@ -5,6 +5,9 @@
 	# change this user agent if you change the code
 	'user_agent': 'EmojiConnoisseurBot (https://github.com/EmojiConnoisseur/bot)',
 
+	# clearnet url
+	'url': 'https://emoji-connoisseur.python-for.life'
+
 	'onions': {
 		# tor onion services for your instance
 		# if left blank, the links to these will not be shown from the clearnet site,

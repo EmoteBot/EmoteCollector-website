@@ -30,7 +30,6 @@ routes = web.RouteTableDef()
 api_prefix = '/api/v0'
 
 environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
-environment.globals['filter'] = filter
 
 def db_route(func):
 	async def wrapped(request):
@@ -130,10 +129,6 @@ async def create_emote(request):
 	except ValueError:
 		raise HTTPBadRequest('invalid URL')
 
-@routes.get(api_prefix+'/docs')
-async def docs(request):
-	return render_template('api_doc.html')
-
 @routes.get(api_prefix+'/emotes')
 async def list(request):
 	return web.json_response(await async_list(_marshaled_iterator(db_cog.all_emotes())))
@@ -146,6 +141,10 @@ async def search(request):
 @routes.get(api_prefix+'/popular')
 async def popular(request):
 	return web.json_response(await async_list(_marshaled_iterator(db_cog.popular_emotes())))
+
+@routes.get(api_prefix+'/docs')
+async def docs(request):
+	return render_template('api_doc.html', urls=filter(None, (config['url'], *config['onions'].values())))
 
 app.add_routes(routes)
 

@@ -11,7 +11,7 @@
 	{{ super() }}
 	<h2>Base URL</h2>
 	The base URL for all endpoints shall be one of:
-	<ul>{% for url in filter(None, urls) %}
+	<ul>{% for url in urls %}
 		<li><span class="api-url">{{ url }}{{ api_prefix }}</span></li>
 	{% endfor %}</ul>
 
