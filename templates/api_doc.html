@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
-{%block title %}Emoji Connoisseur API docs{% endblock %}
+{% block head %}
+	{{ super() }}
+	<link rel=stylesheet href=/css/api_doc.css>
+{% endblock %}
+
+{% block title %} Emoji Connoisseur API docs {% endblock %}
 
 {% block content %}
 	{{ super() }}

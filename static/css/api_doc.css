@@ -1,0 +1,6 @@
+.http-req {
+	font-size: 1.2em;
+	font-family: Menlo, Consolas, Monaco, monospace;}
+
+.http-method {
+	color: hsl(277, 54%, 55%);}
