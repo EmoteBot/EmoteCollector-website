@@ -1,5 +1,5 @@
 git+https://github.com/EmojiConnoisseur/bot
 flask
-flask_restful
 gunicorn
-psycopg2-binary
+psycopg2
+uvloop

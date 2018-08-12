@@ -78,7 +78,7 @@ def _get_db():
 
 	with open('config.py') as config_file:
 		config = utils.load_json_compat(config_file.read())
-		credentials = config.pop('database')
+		credentials = config['database']
 
 	# pylint: disable=invalid-name
 	db = psycopg2.connect(**credentials, cursor_factory=psycopg2.extras.RealDictCursor)
