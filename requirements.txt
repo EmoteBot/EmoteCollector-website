@@ -1,3 +1,4 @@
+git+https://github.com/EmojiConnoisseur/bot
 flask
 flask_restful
 gunicorn

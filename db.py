@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-import json
-
 import psycopg2
 import psycopg2.extras
 
+from emoji_connoisseur import utils
 
 def iter_from_query(query, *args):
 	"""return an iterator from a query that retrieves multiple records"""
@@ -78,18 +77,13 @@ def _get_db():
 	global config
 
 	with open('config.py') as config_file:
-		config = load_json_compat(config_file.read())
+		config = utils.load_json_compat(config_file.read())
 		credentials = config.pop('database')
 
 	# pylint: disable=invalid-name
 	db = psycopg2.connect(**credentials, cursor_factory=psycopg2.extras.RealDictCursor)
 	db.autocommit = True
-	return db
-
-def load_json_compat(data: str):
-	"""evaluate a python dictionary/list/thing, while maintaining compatibility some compatibility with JSON"""
-	globals = dict(true=True, false=False, null=None)
-	return eval(data, globals)
+	return db, config
 
 # hides the temporary variables like credentials and config_file
-db = _get_db()  # pylint: disable=invalid-name
+db, config = _get_db()  # pylint: disable=invalid-name

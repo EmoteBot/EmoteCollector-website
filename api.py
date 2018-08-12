@@ -1,94 +1,13 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-from datetime import datetime
+import asyncio
 
-from flask import Flask, render_template
-from flask_restful import (
-	abort,
-	fields,
-	marshal_with,
-	Resource,
-	Api as API)
-from flask_restful.reqparse import RequestParser
+from emoji_connoisseur import EmojiConnoisseur
+from emoji_connoisseur.extensions import api as api_extension
 
-import db
+from db import config
 
-app = Flask('emoji connoisseur API')
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
-app.jinja_env.globals['filter'] = filter
-
-api = API(app, prefix='/api/v0')
-
-class EmojiConnoisseurDateTime(fields.Raw):
-	EPOCH = 1518652800  # February 15, 2018, the date of the first emote
-
-	@classmethod
-	def format(cls, time: datetime):
-		# time.timestamp() is a float, but we don't need that much precision
-		return int(time.timestamp()) - cls.EPOCH
-
-EMOTE_FIELDS = {
-	'name': fields.String,
-	'id': fields.String,  # JS cannot handle large nums
-	'author': fields.String,  # same here
-	'animated': fields.Boolean,
-	'created': EmojiConnoisseurDateTime,
-	'modified': EmojiConnoisseurDateTime,
-	'preserve': fields.Boolean,
-	'description': fields.String,
-}
-
-EMOTE_WITH_POPULARITY = {
-	**EMOTE_FIELDS,
-	'usage': fields.Integer,
-}
-
-class Emote(Resource):
-	@marshal_with(EMOTE_WITH_POPULARITY)
-	def get(self, name):
-		emote = db.emote(name)
-		if not emote:
-			abort(404, message='Emote not found.')
-
-		emote['usage'] = db.usage(emote['id'])
-		return emote
-
-api.add_resource(Emote, '/emote/<string:name>')
-
-class List(Resource):
-	@marshal_with(EMOTE_FIELDS)
-	def get(self):
-		parser = RequestParser()
-		parser.add_argument('author', type=int, default=None)
-		args = parser.parse_args()
-		return list(db.emotes(args.author)) or abort(404, message='No emotes have been added to the bot yet.')
-
-api.add_resource(List, '/emotes')
-
-class SearchResults(Resource):
-	@marshal_with(EMOTE_FIELDS)
-	def get(self, query):
-		return list(db.search(query)) or abort(404, message='No emotes were found matching your query.')
-
-api.add_resource(SearchResults, '/search/<string:query>')
-
-class PopularEmotes(Resource):
-	@marshal_with(EMOTE_WITH_POPULARITY)
-	def get(self):
-		return list(db.popular()) or abort(404, 'No emotes have been added to the bot yet.')
-
-api.add_resource(PopularEmotes, '/popular')
-
-
-@app.route(api.prefix+'/docs')
-def api_docs():
-	return render_template('api_doc.html',
-		urls=(
-			db.config.get('url'),
-			db.config['onions'].get(2),
-			db.config['onions'].get(3),
-		),
-		api_prefix=api.prefix,
-	)
+loop = asyncio.get_event_loop()
+bot = EmojiConnoisseur(config=config, loop=loop)
+loop.run_until_complete(bot.login(config['tokens'].pop('discord')))

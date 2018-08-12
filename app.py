@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+from emoji_connoisseur.utils import emote as emote_utils
 from flask import Flask, Response
 
 import db
@@ -22,10 +23,6 @@ def stream_template(template_name, **context):
 	template_stream.enable_buffering(5)
 	return template_stream
 
-def emote_url(emote_id, animated: bool = False):
-	"""Convert an emote ID to the image URL for that emote."""
-	return f'https://cdn.discordapp.com/emojis/{emote_id}{".gif" if animated else ".png"}?v=1'
-
-app.jinja_env.globals['emote_url'] = emote_url
+app.jinja_env.globals['emote_url'] = emote_utils.url
 app.jinja_env.globals['v2_onion'] = db.config['onions'][2]
 app.jinja_env.globals['v3_onion'] = db.config['onions'][3]

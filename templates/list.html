@@ -49,7 +49,7 @@
 	{% for emote in emotes %}
 		<tr>
 			<td class="center">
-				{% set url = emote_url(emote.id, emote.animated) %}
+				{% set url = emote_url(emote.id, animated=emote.animated) %}
 				<a href="{{ url }}">
 					{% if emote.animated %}
 						{% set alt = 'an animated emote' %}
