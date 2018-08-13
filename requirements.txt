@@ -1,2 +1,3 @@
 git+https://github.com/EmojiConnoisseur/bot
 gunicorn
+jinja2

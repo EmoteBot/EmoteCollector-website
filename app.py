@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+import asyncio
+
 from aiohttp import web
+from emoji_connoisseur import EmojiConnoisseur
+from emoji_connoisseur import utils
 from emoji_connoisseur.utils import emote as emote_utils
 import jinja2
 
-import db
+from bot import *
 
 app = web.Application()
 routes = web.RouteTableDef()
@@ -16,8 +20,8 @@ environment.trim_blocks = True
 environment.lstrip_blocks = True
 
 environment.globals['emote_url'] = emote_utils.url
-environment.globals['v2_onion'] = db.config['onions'][2]
-environment.globals['v3_onion'] = db.config['onions'][3]
+environment.globals['v2_onion'] = config['onions'][2]
+environment.globals['v3_onion'] = config['onions'][3]
 
 
 @routes.get('/list')
@@ -26,7 +30,7 @@ async def list(request):
 	author = _int_or_none(request.match_info.get('author'))
 
 	rendered = await environment.get_template('list.html').render_async(
-		emotes=db.emotes(author),
+		emotes=db_cog.all_emotes(author),
 		author=author,
 		request=request)
 	return web.Response(text=rendered, content_type='text/html')

@@ -7,23 +7,10 @@ import json
 
 from aiohttp import web
 import discord
-from emoji_connoisseur import EmojiConnoisseur
-from emoji_connoisseur import utils
 from emoji_connoisseur.utils import errors as emoji_connoisseur_errors
 import jinja2
 
-from db import config
-
-loop = asyncio.get_event_loop()
-bot = EmojiConnoisseur(config=config, loop=loop)
-loop.run_until_complete(bot._init_db())
-bot.load_extension('emoji_connoisseur.extensions.db')
-bot.load_extension('emoji_connoisseur.extensions.emote')
-bot.load_extension('emoji_connoisseur.extensions.api')
-db_cog = bot.get_cog('Database')
-emotes_cog = bot.get_cog('Emotes')
-api_cog = bot.get_cog('API')
-loop.run_until_complete(bot.login(config['tokens'].pop('discord')))
+from bot import *
 
 app = web.Application()
 routes = web.RouteTableDef()
