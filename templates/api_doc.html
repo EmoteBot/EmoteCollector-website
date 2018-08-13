@@ -93,12 +93,12 @@
 		One <a href="#emote-with-usage-object">emote with usage object</a>, or 404 if not found.
 	{% endcall %}
 
-	{% call endpoint('Create Emote', 'create-emote', 'POST', '/emote/{name}/{url}', authed) %}
+	{% call endpoint('Create Emote', 'create-emote', 'POST', '/emote/{name}/{url}', authed=True) %}
 		Creates a new emote with name <code>{name}</code> and url <code>{url}</code>.<br>
 		Returns the <a href="#emote-object">emote object</a> that was created on success.
 	{% endcall %}
 
-	{% call endpoint('Edit Emote', 'edit-emote', 'PATCH', '/emote/{name}', authed) %}
+	{% call endpoint('Edit Emote', 'edit-emote', 'PATCH', '/emote/{name}', authed=True) %}
 		Requires JSON data:
 		<div class=table-container><table class=fields>
 			{{ fields_header }}
@@ -107,7 +107,7 @@
 		</table></div>
 	{% endcall %}
 
-	{% call endpoint('Delete Emote', 'delete-emote', 'DELETE', '/emote/{name}', authed) %}
+	{% call endpoint('Delete Emote', 'delete-emote', 'DELETE', '/emote/{name}', authed=True) %}
 		One <a href="#emote-object">emote object</a> that was deleted on success.
 	{% endcall %}
 
