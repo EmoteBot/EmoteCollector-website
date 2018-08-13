@@ -1,5 +1,2 @@
 git+https://github.com/EmojiConnoisseur/bot
-flask
 gunicorn
-psycopg2
-uvloop

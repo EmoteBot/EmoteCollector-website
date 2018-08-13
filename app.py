@@ -1,28 +1,40 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+from aiohttp import web
 from emoji_connoisseur.utils import emote as emote_utils
-from flask import Flask, Response
+import jinja2
 
 import db
 
-app = Flask('emoji-connoisseur')
-app.jinja_env.trim_blocks = True
-app.jinja_env.lstrip_blocks = True
+app = web.Application()
+routes = web.RouteTableDef()
 
-@app.route('/list')
-@app.route('/list/<int:author>')
-def list(author=None):
-	return Response(stream_template('list.html', emotes=db.emotes(author), author=author))
+environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), enable_async=True)
 
-# http://flask.pocoo.org/docs/1.0/patterns/streaming/#streaming-from-templates
-def stream_template(template_name, **context):
-	app.update_template_context(context)
-	template = app.jinja_env.get_template(template_name)
-	template_stream = template.stream(context)
-	template_stream.enable_buffering(5)
-	return template_stream
+environment.trim_blocks = True
+environment.lstrip_blocks = True
 
-app.jinja_env.globals['emote_url'] = emote_utils.url
-app.jinja_env.globals['v2_onion'] = db.config['onions'][2]
-app.jinja_env.globals['v3_onion'] = db.config['onions'][3]
+environment.globals['emote_url'] = emote_utils.url
+environment.globals['v2_onion'] = db.config['onions'][2]
+environment.globals['v3_onion'] = db.config['onions'][3]
+
+
+@routes.get('/list')
+@routes.get('/list/{author:\d+}')
+async def list(request):
+	author = _int_or_none(request.match_info.get('author'))
+
+	rendered = await environment.get_template('list.html').render_async(
+		emotes=db.emotes(author),
+		author=author,
+		request=request)
+	return web.Response(text=rendered, content_type='text/html')
+
+def _int_or_none(x):
+	try:
+		return int(x)
+	except (TypeError, ValueError):
+		return None
+
+app.add_routes(routes)
