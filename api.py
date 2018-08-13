@@ -131,16 +131,18 @@ async def create_emote(request):
 
 @routes.get(api_prefix+'/emotes')
 async def list(request):
-	return web.json_response(await async_list(_marshaled_iterator(db_cog.all_emotes())))
+	results = await async_list(_marshaled_iterator(db_cog.all_emotes()))
+	return json_or_not_found(results)
 
 @routes.get(api_prefix+'/search/{query}')
 async def search(request):
 	results = await async_list(_marshaled_iterator(db_cog.search(request.match_info['query'])))
-	return web.json_response(results)
+	return json_or_not_found(results)
 
 @routes.get(api_prefix+'/popular')
 async def popular(request):
-	return web.json_response(await async_list(_marshaled_iterator(db_cog.popular_emotes())))
+	results = await async_list(_marshaled_iterator(db_cog.popular_emotes()))
+	return json_or_not_found(results)
 
 @routes.get(api_prefix+'/docs')
 async def docs(request):
@@ -173,14 +175,21 @@ def emote_response(emote):
 	_marshal_emote(emote)
 	return web.json_response(emote)
 
+def json_or_not_found(obj):
+	if not obj:
+		raise HTTPNotFound
+	return web.json_response(obj)
+
 def render_template(template, **kwargs):
 	return web.Response(
 		text=environment.get_template(template).render(**kwargs),
 		content_type='text/html')
 
 class JSONHTTPError(web.HTTPException):
-	def __init__(self, reason, **kwargs):
-		super().__init__(text=json.dumps(dict(status=self.status_code, message=reason, **kwargs)))
+	def __init__(self, reason=None, **kwargs):
+		if reason:
+			kwargs['message'] = reason
+		super().__init__(text=json.dumps(dict(status=self.status_code, **kwargs)))
 
 class HTTPBadRequest(web.HTTPBadRequest, JSONHTTPError):
 	# god i love multiple inheritance
