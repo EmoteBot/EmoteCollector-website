@@ -14,11 +14,7 @@ has_uvloop() {
 }
 
 start() {
-	if has_uvloop; then
-		worker=aiohttp.GunicornUVLoopWebWorker
-	else
-		worker=aiohttp.GunicornWebWorker
-	fi
+	worker=aiohttp.GunicornWebWorker
 
 	run_with_worker $worker \
 		--workers 1 \
