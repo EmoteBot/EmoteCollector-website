@@ -176,7 +176,10 @@ class JSONHTTPError(web.HTTPException):
 	def __init__(self, reason=None, **kwargs):
 		if reason:
 			kwargs['message'] = reason
-		super().__init__(text=json.dumps(dict(status=self.status_code, **kwargs)))
+
+		super().__init__(
+			text=json.dumps(dict(status=self.status_code, **kwargs)),
+			content_type='application/json')
 
 class HTTPBadRequest(web.HTTPBadRequest, JSONHTTPError):
 	# god i love multiple inheritance
