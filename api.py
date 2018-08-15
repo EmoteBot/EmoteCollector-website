@@ -136,7 +136,9 @@ async def popular(request):
 
 @routes.get(api_prefix+'/docs')
 async def docs(request):
-	return render_template('api_doc.html', urls=filter(None, (config['url'], *config['onions'].values())))
+	return render_template('api_doc.html',
+		urls=filter(None, (config['url'], *config['onions'].values())),
+		prefix=config['prefix'])
 
 app.add_routes(routes)
 

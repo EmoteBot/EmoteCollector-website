@@ -20,11 +20,6 @@
 		All responses are in JSON form.
 	</p>
 
-	<h2>Objects and Data Types</h2>
-	<p>
-		A <code>?</code> following the name of a field indicates that it may be null.
-	</p>
-
 	{% macro linked_header(title, slug, level=3) %}
 	<h{{ level }} id="{{ slug }}">
 		{{ title }}
@@ -33,6 +28,18 @@
 		</a>
 	</h3>
 	{% endmacro %}
+
+	{{ linked_header('Authorization', 'authorization') }}
+	<p>
+		To get an API token, run <code>{{ prefix }}api token</code>
+		or <code>{{ prefix }}api token regenerate</code>.
+		Your token will be sent to you via DMs. Set the "Authorization" header in all authenticated
+		requests to that token. All authenticated actions will then take place as your Discord account.
+	</p>
+	<h2>Objects and Data Types</h2>
+	<p>
+		A <code>?</code> following the name of a field indicates that it may be null.
+	</p>
 
 	{{ linked_header('Emoji Connoisseur Date Time', 'ec-datetime') }}
 	<p>
