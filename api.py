@@ -75,11 +75,14 @@ async def edit_emote(request):
 
 	user_id = request.user_id
 
-	if 'new_name' in json:
-		actions.append(db_cog.rename_emote(name, new_name, user_id))
+	if 'name' in json:
+		actions.append(db_cog.rename_emote(name, json['name'], user_id))
 
 	if 'description' in json:
 		actions.append(db_cog.set_emote_description(name, user_id, json['description']))
+
+	if not actions:
+		raise HTTPBadRequest('no edits were specified')
 
 	result = {}
 
@@ -141,11 +144,15 @@ def _marshal_emote(emote):
 	EPOCH = 1518652800  # February 15, 2018, the date of the first emote
 	MAX_JSON_INT = 2**53
 
-	for key, value in emote.copy().items():
+	marshalled = emote.copy()
+
+	for key, value in emote.items():
 		if isinstance(value, int) and value > MAX_JSON_INT:
-			emote[key] = str(value)
+			marshalled[key] = str(value)
 		if isinstance(value, datetime):
-			emote[key] = int(value.timestamp()) - EPOCH
+			marshalled[key] = int(value.timestamp()) - EPOCH
+
+	return marshalled
 
 async def async_list(iterable):
 	results = []
@@ -155,12 +162,10 @@ async def async_list(iterable):
 
 async def _marshaled_iterator(iterator):
 	async for emote in iterator:
-		_marshal_emote(emote)
-		yield emote
+		yield _marshal_emote(emote)
 
 def emote_response(emote):
-	_marshal_emote(emote)
-	return web.json_response(emote)
+	return web.json_response(_marshal_emote(emote))
 
 def json_or_not_found(obj):
 	if not obj:
