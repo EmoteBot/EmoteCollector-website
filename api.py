@@ -69,7 +69,6 @@ def requires_auth(func):
 					reason=exception.response.reason,
 					text=exception.text))
 
-
 	return authed_route
 
 async def get_emote_with_usage(name):
@@ -81,6 +80,11 @@ async def get_emote_with_usage(name):
 @db_route
 async def emote(request):
 	return await get_emote_with_usage(request.match_info['name'])
+
+@routes.get(api_prefix+'/login')
+@requires_auth
+async def login(request):
+	return web.json_response(dict(user_id=request.user_id))
 
 @routes.patch(api_prefix+'/emote/{name}')
 @requires_auth
