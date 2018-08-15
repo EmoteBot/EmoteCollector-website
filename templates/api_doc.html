@@ -96,6 +96,13 @@
 	</p>
 	{% endmacro %}
 
+	{% call endpoint('Test token', 'test-token', 'GET', '/login', authed=True) %}
+		<div class=table-container><table class="fields">
+			{{ fields_header }}
+			<tr> <td>user_id <td>String <td>The user ID associated with your token.
+		</table></div>
+	{% endcall %}
+
 	{% call endpoint('Get Emote', 'get-emote', 'GET', '/emote/{emote.name}') %}
 		One <a href="#emote-with-usage-object">emote with usage object</a>, or 404 if not found.
 	{% endcall %}
