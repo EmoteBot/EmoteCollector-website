@@ -52,12 +52,23 @@ def requires_auth(func):
 		except emoji_connoisseur_errors.PermissionDeniedError:
 			raise HTTPForbidden('you do not have permission to modify this emote')
 		except discord.HTTPException as exception:
-			raise HTTPBadRequest(
+			status = exception.response.status
+			if status == 400:
+				cls = HTTPBadRequest
+			elif status == 401:
+				cls = HTTPUnauthorized
+			elif status == 403:
+				cls = HTTPForbidden
+			elif status == 404:
+				cls = HTTPNotFound
+
+			raise cls(
 				'HTTP error from Discord: {exception.text}'.format(exception=exception),
 				error=dict(
 					status=exception.response.status,
 					reason=exception.response.reason,
 					text=exception.text))
+
 
 	return authed_route
 
