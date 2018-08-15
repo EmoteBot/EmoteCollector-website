@@ -144,13 +144,32 @@ def _marshal_emote(emote):
 	EPOCH = 1518652800  # February 15, 2018, the date of the first emote
 	MAX_JSON_INT = 2**53
 
-	marshalled = emote.copy()
+	allowed_fields = (
+		'name',
+		'id',
+		'author',
+		'animated',
+		'created',
+		'modified',
+		'preserve',
+		'description',
+		'usage',
+	)
 
-	for key, value in emote.items():
+	marshalled = {}
+
+	for key in allowed_fields:
+		try:
+			value = emote[key]
+		except KeyError:
+			continue
+
 		if isinstance(value, int) and value > MAX_JSON_INT:
 			marshalled[key] = str(value)
-		if isinstance(value, datetime):
+		elif isinstance(value, datetime):
 			marshalled[key] = int(value.timestamp()) - EPOCH
+		else:
+			marshalled[key] = value
 
 	return marshalled
 
