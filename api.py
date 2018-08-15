@@ -8,6 +8,7 @@ import json
 from aiohttp import web
 import discord
 from emoji_connoisseur.utils import errors as emoji_connoisseur_errors
+from emoji_connoisseur import utils as emoji_connoisseur_utils
 import jinja2
 
 from bot import *
@@ -50,6 +51,13 @@ def requires_auth(func):
 			raise HTTPBadRequest('emote description too long', limit=exception.limit)
 		except emoji_connoisseur_errors.PermissionDeniedError:
 			raise HTTPForbidden('you do not have permission to modify this emote')
+		except discord.HTTPException as exception:
+			raise HTTPBadRequest(
+				'HTTP error from Discord: {exception.text}'.format(exception=exception),
+				error=dict(
+					status=exception.response.status,
+					reason=exception.response.reason,
+					text=exception.text))
 
 	return authed_route
 
@@ -107,13 +115,6 @@ async def create_emote(request):
 
 	try:
 		return emote_response(await emotes_cog.add_from_url(name, url, author))
-	except discord.HTTPException as exception:
-		raise HTTPBadRequest(
-			'HTTP error from Discord',
-			response=dict(
-				status=exception.response.status,
-				reason=exception.response.reason,
-				text=exception.text))
 	except asyncio.TimeoutError:
 		raise HTTPBadRequest('retrieving the image timed out')
 	except ValueError:
@@ -141,6 +142,34 @@ async def docs(request):
 		prefix=config['prefix'])
 
 app.add_routes(routes)
+
+async def handle_404(request):
+	raise HTTPNotFound
+
+async def handle_500(request):
+	raise HTTPInternalServerError
+
+@web.middleware
+async def error_middleware(request, handler):
+	try:
+		response = await handler(request)
+
+		try:
+			return await overrides[response.status](request)
+		except KeyError:
+			return response
+	except web.HTTPException as exception:
+		try:
+			return await overrides[exception.status](request)
+		except KeyError:
+			raise exception
+
+overrides = {
+	404: handle_404,
+	500: handle_500,
+}
+
+app.middlewares.append(error_middleware)
 
 def _marshal_emote(emote):
 	EPOCH = 1518652800  # February 15, 2018, the date of the first emote
