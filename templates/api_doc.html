@@ -97,10 +97,7 @@
 	{% endmacro %}
 
 	{% call endpoint('Test token', 'test-token', 'GET', '/login', authed=True) %}
-		<div class=table-container><table class="fields">
-			{{ fields_header }}
-			<tr> <td>user_id <td>String <td>The user ID associated with your token.
-		</table></div>
+		Returns the user ID associated with your token as a JSON string.
 	{% endcall %}
 
 	{% call endpoint('Get Emote', 'get-emote', 'GET', '/emote/{emote.name}') %}

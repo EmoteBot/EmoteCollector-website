@@ -85,7 +85,7 @@ async def emote(request):
 @routes.get(api_prefix+'/login')
 @requires_auth
 async def login(request):
-	return web.json_response(dict(user_id=request.user_id))
+	return web.json_response(str(request.user_id))
 
 @routes.patch(api_prefix+'/emote/{name}')
 @requires_auth
