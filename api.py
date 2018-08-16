@@ -39,6 +39,7 @@ def requires_auth(func):
 			raise HTTPUnauthorized('no token provided')
 		user_id = await api_cog.validate_token(token.encode())
 		if not user_id:
+			print(token)
 			raise HTTPUnauthorized('invalid or incorrect token provided')
 
 		request.user_id = user_id
