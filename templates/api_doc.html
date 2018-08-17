@@ -104,7 +104,7 @@
 		One <a href="#emote-with-usage-object">emote with usage object</a>, or 404 if not found.
 	{% endcall %}
 
-	{% call endpoint('Create Emote', 'create-emote', 'POST', '/emote/{name}/{url}', authed=True) %}
+	{% call endpoint('Create Emote', 'create-emote', 'PUT', '/emote/{name}/{url}', authed=True) %}
 		Creates a new emote with name <code>{name}</code> and url <code>{url}</code>.<br>
 		Returns the <a href="#emote-object">emote object</a> that was created on success.
 	{% endcall %}

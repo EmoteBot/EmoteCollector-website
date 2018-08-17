@@ -123,7 +123,7 @@ async def delete_emote(request):
 
 	return emote_response(await db_cog.remove_emote(name, user_id))
 
-@routes.post(api_prefix+'/emote/{name}/{url}')
+@routes.put(api_prefix+'/emote/{name}/{url}')
 @requires_auth
 async def create_emote(request):
 	name, url = map(request.match_info.get, ('name', 'url'))
