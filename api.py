@@ -47,7 +47,7 @@ def requires_auth(func):
 		try:
 			return await func(request)
 		except emoji_connoisseur_errors.EmoteExistsError:
-			raise HTTPBadRequest('emote exists')
+			raise HTTPConflict('emote exists', name=request.match_info['name'])
 		except emoji_connoisseur_errors.EmoteDescriptionTooLongError as exception:
 			raise HTTPBadRequest('emote description too long', limit=exception.limit)
 		except emoji_connoisseur_errors.PermissionDeniedError:
@@ -263,6 +263,9 @@ class HTTPForbidden(web.HTTPForbidden, JSONHTTPError):
 	pass
 
 class HTTPNotFound(web.HTTPNotFound, JSONHTTPError):
+	pass
+
+class HTTPConflict(web.HTTPConflict, JSONHTTPError):
 	pass
 
 class HTTPInternalServerError(web.HTTPInternalServerError, JSONHTTPError):

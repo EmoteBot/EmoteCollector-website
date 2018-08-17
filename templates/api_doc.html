@@ -106,7 +106,8 @@
 
 	{% call endpoint('Create Emote', 'create-emote', 'PUT', '/emote/{name}/{url}', authed=True) %}
 		Creates a new emote with name <code>{name}</code> and url <code>{url}</code>.<br>
-		Returns the <a href="#emote-object">emote object</a> that was created on success.
+		Returns the <a href="#emote-object">emote object</a> that was created on success.<br>
+		If the emote already exists, returns 409 Conflict.
 	{% endcall %}
 
 	{% call endpoint('Edit Emote', 'edit-emote', 'PATCH', '/emote/{emote.name}', authed=True) %}
