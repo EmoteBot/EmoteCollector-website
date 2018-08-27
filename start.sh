@@ -1,30 +1,24 @@
 #!/usr/bin/env sh
 
-run_with_worker() {
-	worker=$1
-	shift
+start() {
+	module="$1"
+	port="$2"
+	ip="${3:-0.0.0.0}"
 
 	gunicorn \
-		--worker-class $worker \
-		"$@"
-}
-
-has_uvloop() {
-	python3 -c 'import uvloop' >/dev/null 2>&1
-}
-
-start() {
-	worker=aiohttp.GunicornWebWorker
-
-	run_with_worker $worker \
+		--worker-class aiohttp.GunicornWebWorker \
 		--workers 1 \
 		--threads 4 \
 		--max-requests 10000 \
 		--reload \
-		--bind 0.0.0.0:$2 $1:app &
+		--bind "$ip":"$port" "$module":app
 }
 
-start app 8080
-start api 8081
+start app "${EC_WEBSITE_PORT:-8080}" "$EC_WEBSITE_IP" &
+# running the schema code from the bot requires an exclusive lock on the database
+# so we can't have them both run at the same time
+# XXX this is a bunk way to synchronize processes
+sleep 2
+start api "${EC_API_PORT:-8081}" "$EC_API_IP" &
 
 wait
