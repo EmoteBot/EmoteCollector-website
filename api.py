@@ -252,21 +252,21 @@ class JSONHTTPError(web.HTTPException):
 			text=json.dumps(dict(status=self.status_code, **kwargs)),
 			content_type='application/json')
 
-class HTTPBadRequest(web.HTTPBadRequest, JSONHTTPError):
+class HTTPBadRequest(JSONHTTPError, web.HTTPBadRequest):
 	# god i love multiple inheritance
 	pass
 
-class HTTPUnauthorized(web.HTTPUnauthorized, JSONHTTPError):
+class HTTPUnauthorized(JSONHTTPError, web.HTTPUnauthorized):
 	pass
 
-class HTTPForbidden(web.HTTPForbidden, JSONHTTPError):
+class HTTPForbidden(JSONHTTPError, web.HTTPForbidden):
 	pass
 
-class HTTPNotFound(web.HTTPNotFound, JSONHTTPError):
+class HTTPNotFound(JSONHTTPError, web.HTTPNotFound):
 	pass
 
-class HTTPConflict(web.HTTPConflict, JSONHTTPError):
+class HTTPConflict(JSONHTTPError, web.HTTPConflict):
 	pass
 
-class HTTPInternalServerError(web.HTTPInternalServerError, JSONHTTPError):
+class HTTPInternalServerError(JSONHTTPError, web.HTTPInternalServerError):
 	pass
