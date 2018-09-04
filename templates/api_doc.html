@@ -134,6 +134,8 @@
 	{% call endpoint('List Popular Emotes', 'list-popular-emotes', 'GET', '/popular') %}
 		List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity, or 404
 		if no emotes have been created yet.
+
+		Emotes that have not been used will not be returned.
 	{% endcall %}
 
 {% endblock %}
