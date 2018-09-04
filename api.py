@@ -148,7 +148,11 @@ async def search(request):
 
 @routes.get(api_prefix+'/popular')
 async def popular(request):
-	results = await async_list(_marshaled_iterator(db_cog.popular_emotes()))
+	results = []
+	async for emote in db_cog.popular_emotes():
+		if emote.usage:
+			results.append(_marshal_emote(emote))
+
 	return json_or_not_found(results)
 
 @routes.get(api_prefix+'/docs')
