@@ -4,9 +4,8 @@
 import asyncio
 
 from aiohttp import web
-from emoji_connoisseur import EmojiConnoisseur
-from emoji_connoisseur import utils
-from emoji_connoisseur.utils import emote as emote_utils
+from emote_collector import utils
+from emote_collector.utils import emote as emote_utils
 import jinja2
 
 from bot import *

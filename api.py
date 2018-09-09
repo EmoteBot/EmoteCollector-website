@@ -7,8 +7,8 @@ import json
 
 from aiohttp import web
 import discord
-from emoji_connoisseur.utils import errors as emoji_connoisseur_errors
-from emoji_connoisseur import utils as emoji_connoisseur_utils
+from emote_collector.utils import errors as emote_collector_errors
+from emote_collector import utils as emote_collector_utils
 import jinja2
 
 from bot import *
@@ -23,9 +23,9 @@ def db_route(func):
 	async def wrapped(request):
 		try:
 			return await func(request)
-		except emoji_connoisseur_errors.EmoteNotFoundError:
+		except emote_collector_errors.EmoteNotFoundError:
 			raise HTTPNotFound('emote does not exist')
-		except emoji_connoisseur_errors.NoMoreSlotsError:
+		except emote_collector_errors.NoMoreSlotsError:
 			raise HTTPInternalServiceError('no more slots')
 
 	return wrapped
@@ -46,11 +46,11 @@ def requires_auth(func):
 
 		try:
 			return await func(request)
-		except emoji_connoisseur_errors.EmoteExistsError:
+		except emote_collector_errors.EmoteExistsError:
 			raise HTTPConflict('emote exists', name=request.match_info['name'])
-		except emoji_connoisseur_errors.EmoteDescriptionTooLongError as exception:
+		except emote_collector_errors.EmoteDescriptionTooLongError as exception:
 			raise HTTPBadRequest('emote description too long', limit=exception.limit)
-		except emoji_connoisseur_errors.PermissionDeniedError:
+		except emote_collector_errors.PermissionDeniedError:
 			raise HTTPForbidden('you do not have permission to modify this emote')
 		except discord.HTTPException as exception:
 			status = exception.response.status

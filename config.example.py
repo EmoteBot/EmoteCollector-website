@@ -1,9 +1,9 @@
 {
 	'description': '',
-	'prefix': '',
+	'prefix': 'ec/',
 
 	# change this user agent if you change the code
-	'user_agent': 'EmojiConnoisseurBot (https://github.com/EmojiConnoisseur/bot)',
+	'user_agent': 'EmoteCollectorBot (https://github.com/EmoteCollector/bot)',
 
 	# clearnet url
 	'url': 'https://emoji-connoisseur.python-for.life'

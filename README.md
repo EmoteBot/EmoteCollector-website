@@ -1,4 +1,4 @@
-# Emoji Connoisseur Website
+# Emote Collector Website
 
 This is the code that powers https://emoji-connoisseur.python-for.life.
 
@@ -7,7 +7,7 @@ This is the code that powers https://emoji-connoisseur.python-for.life.
 1. Make a new venv
 2. pip install -r requirements.txt
 3. Copy config.example.py to config.py and fill in your database information.
-This should be the same database that Emoji Connoisseur Bot connects to.
+This should be the same database that Emote Collector Bot connects to.
 4. Run start.sh
 5. Edit [the Caddyfile](/Caddyfile) to your needs
 6. Run caddy
@@ -17,7 +17,7 @@ config.py
 ## License
 
 <pre>
-Emoji Connoisseur Website provides a list of emotes in HTML form.
+Emote Collector Website provides a list of emotes and an API for the Emote Collector bot.
 Copyright © 2018 Benjamin Mintz
 
 This program is free software: you can redistribute it and/or modify

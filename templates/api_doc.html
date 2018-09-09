@@ -5,7 +5,7 @@
 	<link rel=stylesheet href=/css/api_doc.css>
 {% endblock %}
 
-{% block title %} Emoji Connoisseur API docs {% endblock %}
+{% block title %} Emote Collector API docs {% endblock %}
 
 {% block content %}
 	{{ super() }}
@@ -41,9 +41,9 @@
 		A <code>?</code> following the name of a field indicates that it may be null.
 	</p>
 
-	{{ linked_header('Emoji Connoisseur Date Time', 'ec-datetime') }}
+	{{ linked_header('Emote Collector Date Time', 'ec-datetime') }}
 	<p>
-		All times are recorded in seconds (without leap seconds) since the Emoji Connoisseur Epoch, which is the first second of 2018-02-15, UTC.
+		All times are recorded in seconds (without leap seconds) since the Emote Collector Epoch, which is the first second of 2018-02-15, UTC.
 		In Unix time, that's 1518652800.
 	</p>
 
@@ -63,11 +63,11 @@
 		<tr> <td>animated <td>Boolean</td> <td>
 		<tr>
 			<td>created
-			<td><a href="#ec-datetime">Emoji Connoisseur Date Time</a>
+			<td><a href="#ec-datetime">Emote Collector Date Time</a>
 			<td>
 		<tr>
 			<td>modified?
-			<td><a href="#ec-datetime">Emoji Connoisseur Date Time</a>
+			<td><a href="#ec-datetime">Emote Collector Date Time</a>
 			<td>
 		<tr> <td>preserve <td>Boolean <td>whether to prevent this emote from being removed if it goes unused
 		<tr> <td>description? <td>String <td>
