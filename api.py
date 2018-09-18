@@ -3,6 +3,7 @@
 
 import asyncio
 from datetime import datetime
+import io
 import json
 
 from aiohttp import web
@@ -13,7 +14,7 @@ import jinja2
 
 from bot import *
 
-app = web.Application()
+app = web.Application(client_max_size=16 * 1024**2)  # controls max size of PUT/POST request data
 routes = web.RouteTableDef()
 api_prefix = '/api/v0'
 
@@ -131,10 +132,29 @@ async def create_emote(request):
 
 	try:
 		return emote_response(await emotes_cog.add_from_url(name, url, author))
-	except asyncio.TimeoutError:
+	except emote_collector_errors.URLTimeoutError:
 		raise HTTPBadRequest('retrieving the image timed out')
+	except emote_collector_errors.ImageResizeTimeoutError:
+		raise HTTPRequestEntityTooLarge('resizing the image took too long')
 	except ValueError:
 		raise HTTPBadRequest('invalid URL')
+
+@routes.put(api_prefix+'/emote/{name}')
+@requires_auth
+async def create_emote_from_data(request):
+	if not request.has_body or not request.can_read_body:
+		raise HTTPBadRequest('image data required in body')
+
+	name = request.match_info['name']
+	author = request.user_id
+	image = io.BytesIO(await request.read())
+
+	try:
+		return emote_response(await emotes_cog.create_emote_from_bytes(name, author, image))
+	except emote_collector_errors.ImageResizeTimeoutError:
+		raise HTTPRequestEntityTooLarge('image resize took too long')
+	except emote_collector_errors.InvalidImageError:
+		raise HTTPUnsupportedMediaType('PNG, GIF, or JPEG required in body')
 
 @routes.get(api_prefix+'/emotes')
 async def list(request):
@@ -270,6 +290,12 @@ class HTTPNotFound(JSONHTTPError, web.HTTPNotFound):
 	pass
 
 class HTTPConflict(JSONHTTPError, web.HTTPConflict):
+	pass
+
+class HTTPRequestEntityTooLarge(JSONHTTPError, web.HTTPUnsupportedMediaType):
+	pass
+
+class HTTPUnsupportedMediaType(JSONHTTPError, web.HTTPUnsupportedMediaType):
 	pass
 
 class HTTPInternalServerError(JSONHTTPError, web.HTTPInternalServerError):
