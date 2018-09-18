@@ -5,6 +5,7 @@ import asyncio
 from datetime import datetime
 import io
 import json
+import re
 
 from aiohttp import web
 import discord
@@ -26,8 +27,6 @@ def db_route(func):
 			return await func(request)
 		except emote_collector_errors.EmoteNotFoundError:
 			raise HTTPNotFound('emote does not exist')
-		except emote_collector_errors.NoMoreSlotsError:
-			raise HTTPInternalServiceError('no more slots')
 
 	return wrapped
 
@@ -40,7 +39,6 @@ def requires_auth(func):
 			raise HTTPUnauthorized('no token provided')
 		user_id = await api_cog.validate_token(token.encode())
 		if not user_id:
-			print(token)
 			raise HTTPUnauthorized('invalid or incorrect token provided')
 
 		request.user_id = user_id
@@ -50,38 +48,35 @@ def requires_auth(func):
 		except emote_collector_errors.EmoteExistsError:
 			raise HTTPConflict('emote exists', name=request.match_info['name'])
 		except emote_collector_errors.EmoteDescriptionTooLongError as exception:
-			raise HTTPBadRequest('emote description too long', limit=exception.limit)
+			raise HTTPRequestEntityTooLarge(
+				'emote description too long',
+				actual_size=exception.actual_length,
+				max_size=exception.limit)
 		except emote_collector_errors.PermissionDeniedError:
 			raise HTTPForbidden('you do not have permission to modify this emote')
+		except emote_collector_errors.NoMoreSlotsError:
+			raise HTTPInternalServerError('no more slots')
 		except discord.HTTPException as exception:
 			status = exception.response.status
-			if status == 400:
-				cls = HTTPBadRequest
-			elif status == 401:
-				cls = HTTPUnauthorized
-			elif status == 403:
-				cls = HTTPForbidden
-			elif status == 404:
-				cls = HTTPNotFound
+			cls = errors[status]
 
 			raise cls(
 				'HTTP error from Discord: {exception.text}'.format(exception=exception),
 				error=dict(
-					status=exception.response.status,
+					status=status,
 					reason=exception.response.reason,
 					text=exception.text))
 
 	return authed_route
 
-async def get_emote_with_usage(name):
-	emote = await db_cog.get_emote(name)
-	emote.usage = await db_cog.get_emote_usage(emote)
-	return emote_response(emote)
-
 @routes.get(api_prefix+'/emote/{name}')
 @db_route
 async def emote(request):
-	return await get_emote_with_usage(request.match_info['name'])
+	name = request.match_info['name']
+
+	emote = await db_cog.get_emote(name)
+	emote.usage = await db_cog.get_emote_usage(emote)
+	return emote_response(emote)
 
 @routes.get(api_prefix+'/login')
 @requires_auth
@@ -91,28 +86,19 @@ async def login(request):
 @routes.patch(api_prefix+'/emote/{name}')
 @requires_auth
 async def edit_emote(request):
-	json = await request.json()
-
-	actions = []
-
 	name = request.match_info['name']
-	await db_cog.get_emote(name)  # ensure it exists
-
 	user_id = request.user_id
 
-	if 'name' in json:
-		actions.append(db_cog.rename_emote(name, json['name'], user_id))
+	json = await request.json()
 
-	if 'description' in json:
-		actions.append(db_cog.set_emote_description(name, user_id, json['description']))
-
-	if not actions:
+	if 'description' not in json and 'name' not in json:
 		raise HTTPBadRequest('no edits were specified')
 
-	result = {}
+	if 'description' in json:
+		result = await db_cog.set_emote_description(name, user_id, json['description'])
 
-	for action in actions:
-		result = await action
+	if 'name' in json:
+		result = await db_cog.rename_emote(name, json['name'], user_id)
 
 	return emote_response(result)
 
@@ -142,7 +128,7 @@ async def create_emote(request):
 @routes.put(api_prefix+'/emote/{name}')
 @requires_auth
 async def create_emote_from_data(request):
-	if not request.has_body or not request.can_read_body:
+	if not request.can_read_body:
 		raise HTTPBadRequest('image data required in body')
 
 	name = request.match_info['name']
@@ -183,33 +169,11 @@ async def docs(request):
 
 app.add_routes(routes)
 
-async def handle_404(request):
-	raise HTTPNotFound
-
-async def handle_500(request):
-	raise HTTPInternalServerError
-
-@web.middleware
-async def error_middleware(request, handler):
-	try:
-		response = await handler(request)
-
-		try:
-			return await overrides[response.status](request)
-		except KeyError:
-			return response
-	except web.HTTPException as exception:
-		try:
-			return await overrides[exception.status](request)
-		except KeyError:
-			raise exception
-
-overrides = {
-	404: handle_404,
-	500: handle_500,
-}
-
-app.middlewares.append(error_middleware)
+async def async_list(iterable):
+	results = []
+	async for x in iterable:
+		results.append(x)
+	return results
 
 def _marshal_emote(emote):
 	EPOCH = 1518652800  # February 15, 2018, the date of the first emote
@@ -243,12 +207,6 @@ def _marshal_emote(emote):
 			marshalled[key] = value
 
 	return marshalled
-
-async def async_list(iterable):
-	results = []
-	async for x in iterable:
-		results.append(x)
-	return results
 
 async def _marshaled_iterator(iterator):
 	async for emote in iterator:
@@ -292,11 +250,45 @@ class HTTPNotFound(JSONHTTPError, web.HTTPNotFound):
 class HTTPConflict(JSONHTTPError, web.HTTPConflict):
 	pass
 
-class HTTPRequestEntityTooLarge(JSONHTTPError, web.HTTPUnsupportedMediaType):
-	pass
+class HTTPRequestEntityTooLarge(JSONHTTPError):
+	status_code = 413
+
+	def __init__(self, reason=None, *, max_size=None, actual_size=None):
+		super().__init__(reason=reason, max_size=max_size, actual_size=actual_size)
 
 class HTTPUnsupportedMediaType(JSONHTTPError, web.HTTPUnsupportedMediaType):
 	pass
 
 class HTTPInternalServerError(JSONHTTPError, web.HTTPInternalServerError):
 	pass
+
+errors = {
+	400: HTTPBadRequest,
+	401: HTTPUnauthorized,
+	403: HTTPForbidden,
+	404: HTTPNotFound,
+	409: HTTPConflict,
+	413: HTTPRequestEntityTooLarge,
+	415: HTTPUnsupportedMediaType,
+	500: HTTPInternalServerError,
+}
+
+@web.middleware
+async def error_middleware(request, handler):
+	try:
+		return await handler(request)
+	except web.HTTPRequestEntityTooLarge as exception:
+		max_size_actual_size = re.search(br'(\d+) exceeded, actual body size (\d+)', exception.body).groups()
+		max_size, actual_size = map(int, max_size_actual_size)
+		raise HTTPRequestEntityTooLarge(exception.body.decode(), max_size=max_size, actual_size=actual_size)
+	except JSONHTTPError:
+		# supress custom handling of JSONHTTPErrors, ensuring that the next except branch
+		# *only* runs for non-customized errors
+		raise
+	except web.HTTPException as exception:
+		try:
+			raise errors[exception.status]
+		except KeyError:
+			raise exception
+
+app.middlewares.append(error_middleware)
