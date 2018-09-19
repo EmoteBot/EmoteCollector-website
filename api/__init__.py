@@ -6,6 +6,7 @@ from datetime import datetime
 import io
 import json
 import re
+import textwrap
 
 from aiohttp import web
 import discord
@@ -14,6 +15,7 @@ from emote_collector import utils as emote_collector_utils
 import jinja2
 
 from bot import *
+from .errors import *
 
 app = web.Application(client_max_size=16 * 1024**2)  # controls max size of PUT/POST request data
 routes = web.RouteTableDef()
@@ -225,66 +227,18 @@ def render_template(template, **kwargs):
 		text=environment.get_template(template).render(**kwargs),
 		content_type='text/html')
 
-class JSONHTTPError(web.HTTPException):
-	def __init__(self, reason=None, **kwargs):
-		if reason:
-			kwargs['message'] = reason
-
-		super().__init__(
-			text=json.dumps(dict(status=self.status_code, **kwargs)),
-			content_type='application/json')
-
-class HTTPBadRequest(JSONHTTPError, web.HTTPBadRequest):
-	# god i love multiple inheritance
-	pass
-
-class HTTPUnauthorized(JSONHTTPError, web.HTTPUnauthorized):
-	pass
-
-class HTTPForbidden(JSONHTTPError, web.HTTPForbidden):
-	pass
-
-class HTTPNotFound(JSONHTTPError, web.HTTPNotFound):
-	pass
-
-class HTTPConflict(JSONHTTPError, web.HTTPConflict):
-	pass
-
-class HTTPRequestEntityTooLarge(JSONHTTPError):
-	status_code = 413
-
-	def __init__(self, reason=None, *, max_size=None, actual_size=None):
-		super().__init__(reason=reason, max_size=max_size, actual_size=actual_size)
-
-class HTTPUnsupportedMediaType(JSONHTTPError, web.HTTPUnsupportedMediaType):
-	pass
-
-class HTTPInternalServerError(JSONHTTPError, web.HTTPInternalServerError):
-	pass
-
-errors = {
-	400: HTTPBadRequest,
-	401: HTTPUnauthorized,
-	403: HTTPForbidden,
-	404: HTTPNotFound,
-	409: HTTPConflict,
-	413: HTTPRequestEntityTooLarge,
-	415: HTTPUnsupportedMediaType,
-	500: HTTPInternalServerError,
-}
-
 @web.middleware
 async def error_middleware(request, handler):
 	try:
 		return await handler(request)
-	except web.HTTPRequestEntityTooLarge as exception:
-		max_size_actual_size = re.search(br'(\d+) exceeded, actual body size (\d+)', exception.body).groups()
-		max_size, actual_size = map(int, max_size_actual_size)
-		raise HTTPRequestEntityTooLarge(exception.body.decode(), max_size=max_size, actual_size=actual_size)
 	except JSONHTTPError:
 		# supress custom handling of JSONHTTPErrors, ensuring that the next except branch
 		# *only* runs for non-customized errors
 		raise
+	except web.HTTPRequestEntityTooLarge as exception:
+		max_size_actual_size = re.search(br'(\d+) exceeded, actual body size (\d+)', exception.body).groups()
+		max_size, actual_size = map(int, max_size_actual_size)
+		raise HTTPRequestEntityTooLarge(exception.body.decode(), max_size=max_size, actual_size=actual_size)
 	except web.HTTPException as exception:
 		try:
 			raise errors[exception.status]
