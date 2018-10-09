@@ -13,7 +13,7 @@ from .errors import *
 routes = web.RouteTableDef()
 api_prefix = '/api/v0'
 
-environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
+environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), enable_async=True)
 
 def db_route(func):
 	async def wrapped(request):
@@ -157,7 +157,7 @@ async def popular(request):
 
 @routes.get(api_prefix+'/docs')
 async def docs(request):
-	return render_template('api_doc.html',
+	return await render_template('api_doc.html',
 		urls=filter(None, (config['url'], *config['onions'].values())),
 		prefix=config['prefix'])
 
@@ -212,7 +212,7 @@ def json_or_not_found(obj):
 		raise HTTPNotFound
 	return web.json_response(obj)
 
-def render_template(template, **kwargs):
+async def render_template(template, **kwargs):
 	return web.Response(
-		text=environment.get_template(template).render(**kwargs),
+		text=await environment.get_template(template).render_async(**kwargs),
 		content_type='text/html')
