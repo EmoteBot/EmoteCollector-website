@@ -105,7 +105,7 @@
 	{% endcall %}
 
 	{% call endpoint('Create Emote', 'create-emote', 'PUT', '/emote/{name}/{url}', authed=True) %}
-		Creates a new emote with name <code>{name}</code> and url <code>{url}</code>.<br>
+		Creates a new emote with name <code>name</code> and url <code>url</code>.<br>
 		Returns the <a href="#emote-object">emote object</a> that was created on success.<br>
 		If the emote already exists, returns 409 Conflict.<br>
 		If retrieving the URL took too long, returns 400 Bad Request.<br>
@@ -114,7 +114,7 @@
 	{% endcall %}
 
 	{% call endpoint('Create Emote From Bytes', 'create-emote-bytes', 'PUT', '/emote/{name}', authed=True) %}
-		Creates a new emote with name <code>{name}</code> and image data given in the request body.<br>
+		Creates a new emote with name <code>name</code> and image data given in the request body.<br>
 		Request body must not exceed 16 MiB.<br>
 
 		Returns the <a href="#emote-object">emote object</a> that was created on success.<br>
@@ -146,7 +146,8 @@
 	{% endcall %}
 
 	{% call endpoint('Search Emotes', 'search-emotes', 'GET', '/search/{query}') %}
-		List of <a href="#emote-object">emote objects</a> whose name case-insensitively includes <code>{query}</code>.
+		List of <a href="#emote-object">emote objects</a> whose name is <em>similar</em> to <code>query</code>.
+		Similarity is tested using <a href="https://www.postgresql.org/docs/current/static/pgtrgm.html">trigram matching</a>.
 	{% endcall %}
 
 	{% call endpoint('List Popular Emotes', 'list-popular-emotes', 'GET', '/popular') %}
@@ -154,6 +155,7 @@
 		if no emotes have been created yet.
 
 		Emotes that have not been used will not be returned.
+		A maximum of 200 emotes will be returned.
 	{% endcall %}
 
 {% endblock %}
