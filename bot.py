@@ -8,9 +8,7 @@ import asyncio
 from emote_collector import EmoteCollector
 from emote_collector import utils
 
-with open('config.py') as config_file:
-	config = utils.load_json_compat(config_file.read())
-del config_file
+config = utils.load_json_compat('config.py')
 
 loop = asyncio.get_event_loop()
 bot = EmoteCollector(config=config, loop=loop)
