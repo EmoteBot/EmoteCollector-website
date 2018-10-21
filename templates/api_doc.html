@@ -140,6 +140,11 @@
 		List of <a href="#emote-object">emote objects</a>, or 404 if no emotes have been created yet.
 	{% endcall %}
 
+	{% call endpoint('List Emotes By Author', 'list-emotes-by-author', 'GET', '/emotes/{emote.author}') %}
+		List of <a href="#emote-object">emote objects</a> that were created by <code>emote.author</code>,
+		or 404 if no emotes have been created yet.
+	{% endcall %}
+
 	{% call endpoint('Search Emotes', 'search-emotes', 'GET', '/search/{query}') %}
 		List of <a href="#emote-object">emote objects</a> whose name case-insensitively includes <code>{query}</code>.
 	{% endcall %}

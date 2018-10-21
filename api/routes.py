@@ -141,6 +141,16 @@ async def list(request):
 	results = await async_list(_marshaled_iterator(db_cog.all_emotes()))
 	return json_or_not_found(results)
 
+@routes.get(api_prefix+'/emotes/{author}')
+async def list_by_author(request):
+	try:
+		author_id = int(request.match_info['author'])
+	except ValueError:
+		raise HTTPBadRequest('Author ID must be a snowflake.')
+
+	results = await async_list(_marshaled_iterator(db_cog.all_emotes(author_id)))
+	return json_or_not_found(results)
+
 @routes.get(api_prefix+'/search/{query}')
 async def search(request):
 	results = await async_list(_marshaled_iterator(db_cog.search(request.match_info['query'])))
