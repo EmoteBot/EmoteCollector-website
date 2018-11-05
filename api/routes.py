@@ -195,18 +195,18 @@ def _marshal_emote(emote):
 
 	marshalled = {}
 
-	for key in allowed_fields:
+	for field in allowed_fields:
 		try:
-			value = emote[key]
-		except KeyError:
+			value = getattr(emote, field)
+		except AttributeError:
 			continue
 
 		if isinstance(value, int) and value > MAX_JSON_INT:
-			marshalled[key] = str(value)
+			marshalled[field] = str(value)
 		elif isinstance(value, datetime):
-			marshalled[key] = int(value.timestamp()) - EPOCH
+			marshalled[field] = int(value.timestamp()) - EPOCH
 		else:
-			marshalled[key] = value
+			marshalled[field] = value
 
 	return marshalled
 
