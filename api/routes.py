@@ -181,6 +181,7 @@ def _marshal_emote(emote):
 		'preserve',
 		'description',
 		'usage',
+		'nsfw',
 	)
 
 	marshalled = {}
