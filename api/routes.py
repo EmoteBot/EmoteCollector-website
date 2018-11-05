@@ -161,6 +161,19 @@ async def popular(request):
 	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes() if emote.usage]
 	return web.json_response(results)
 
+# why is this route necessary?
+# you actually can't just filter /popular by author, because that will only return the first N emotes
+# so if the user made an emote that has 3 uses, it probably won't show up in /popular
+@routes.get(api_prefix+'/popular/{author}')
+async def popular_by_author(request):
+	try:
+		author_id = int(request.match_info['author'])
+	except ValueError:
+		raise HTTPBadRequest('Author ID must be a snowflake.')
+
+	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes(author_id)]
+	return web.json_response(results)
+
 @routes.get(api_prefix+'/docs')
 async def docs(request):
 	return await render_template('api_doc.html',

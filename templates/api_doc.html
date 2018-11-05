@@ -157,4 +157,9 @@
 		A maximum of 200 emotes will be returned.
 	{% endcall %}
 
+	{% call endpoint('List Popular Emotes By Author', 'list-popular-emotes-by-author', 'GET', '/popular/{emote.author}') %}
+		List of <a href="#emote-object">emote objects</a> that were created by <code>emote.author</code>, sorted
+		by popularity. A maximum of 200 emotes will be returned.
+	{% endcall %}
+
 {% endblock %}
