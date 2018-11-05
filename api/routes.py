@@ -139,7 +139,7 @@ async def create_emote_from_data(request):
 @routes.get(api_prefix+'/emotes')
 async def list(request):
 	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes()]
-	return json_or_not_found(results)
+	return web.json_response(results)
 
 @routes.get(api_prefix+'/emotes/{author}')
 async def list_by_author(request):
@@ -149,17 +149,17 @@ async def list_by_author(request):
 		raise HTTPBadRequest('Author ID must be a snowflake.')
 
 	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(author_id)]
-	return json_or_not_found(results)
+	return web.json_response(results)
 
 @routes.get(api_prefix+'/search/{query}')
 async def search(request):
 	results = [_marshal_emote(emote) async for emote in db_cog.search(request.match_info['query'])]
-	return json_or_not_found(results)
+	return web.json_response(results)
 
 @routes.get(api_prefix+'/popular')
 async def popular(request):
 	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes() if emote.usage]
-	return json_or_not_found(results)
+	return web.json_response(results)
 
 @routes.get(api_prefix+'/docs')
 async def docs(request):
@@ -207,11 +207,6 @@ async def _marshaled_iterator(iterator):
 
 def emote_response(emote):
 	return web.json_response(_marshal_emote(emote))
-
-def json_or_not_found(obj):
-	if not obj:
-		raise HTTPNotFound
-	return web.json_response(obj)
 
 async def render_template(template, **kwargs):
 	return web.Response(

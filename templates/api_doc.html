@@ -137,12 +137,11 @@
 	{% endcall %}
 
 	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes') %}
-		List of <a href="#emote-object">emote objects</a>, or 404 if no emotes have been created yet.
+		List of <a href="#emote-object">emote objects</a>.
 	{% endcall %}
 
 	{% call endpoint('List Emotes By Author', 'list-emotes-by-author', 'GET', '/emotes/{emote.author}') %}
-		List of <a href="#emote-object">emote objects</a> that were created by <code>emote.author</code>,
-		or 404 if no emotes have been created yet.
+		List of <a href="#emote-object">emote objects</a> that were created by <code>emote.author</code>.
 	{% endcall %}
 
 	{% call endpoint('Search Emotes', 'search-emotes', 'GET', '/search/{query}') %}
@@ -151,10 +150,8 @@
 	{% endcall %}
 
 	{% call endpoint('List Popular Emotes', 'list-popular-emotes', 'GET', '/popular') %}
-		List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity, or 404
-		if no emotes have been created yet.
+		List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity.
 
-		Emotes that have not been used will not be returned.
 		A maximum of 200 emotes will be returned.
 	{% endcall %}
 
