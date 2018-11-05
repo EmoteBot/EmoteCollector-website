@@ -138,7 +138,7 @@ async def create_emote_from_data(request):
 
 @routes.get(api_prefix+'/emotes')
 async def list(request):
-	results = await async_list(_marshaled_iterator(db_cog.all_emotes()))
+	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes()]
 	return json_or_not_found(results)
 
 @routes.get(api_prefix+'/emotes/{author}')
@@ -148,21 +148,17 @@ async def list_by_author(request):
 	except ValueError:
 		raise HTTPBadRequest('Author ID must be a snowflake.')
 
-	results = await async_list(_marshaled_iterator(db_cog.all_emotes(author_id)))
+	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(author_id)]
 	return json_or_not_found(results)
 
 @routes.get(api_prefix+'/search/{query}')
 async def search(request):
-	results = await async_list(_marshaled_iterator(db_cog.search(request.match_info['query'])))
+	results = [_marshal_emote(emote) async for emote in db_cog.search(request.match_info['query'])]
 	return json_or_not_found(results)
 
 @routes.get(api_prefix+'/popular')
 async def popular(request):
-	results = []
-	async for emote in db_cog.popular_emotes():
-		if emote.usage:
-			results.append(_marshal_emote(emote))
-
+	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes() if emote.usage]
 	return json_or_not_found(results)
 
 @routes.get(api_prefix+'/docs')
@@ -170,12 +166,6 @@ async def docs(request):
 	return await render_template('api_doc.html',
 		urls=filter(None, (config['url'], *config['onions'].values())),
 		prefix=config['prefix'])
-
-async def async_list(iterable):
-	results = []
-	async for x in iterable:
-		results.append(x)
-	return results
 
 def _marshal_emote(emote):
 	EPOCH = 1518652800  # February 15, 2018, the date of the first emote
