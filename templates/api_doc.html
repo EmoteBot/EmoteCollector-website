@@ -84,7 +84,7 @@
 
 	<h2>Endpoints</h2>
 
-	{% macro endpoint(title, slug, method, url, authed=False) %}
+	{% macro endpoint(title, slug, method, url, authed=False, nsfw_param=False) %}
 	<h3 class=http-req-title id="{{ slug }}">
 		{{ title }}
 		<a href="#{{ slug }}" class=header-link><img src=/img/link.png></a>
@@ -96,6 +96,13 @@
 		{% endif %}
 		{{ caller() }}
 	</p>
+	{% if nsfw_param %}
+	<h4>Query Parameters</h4>
+
+	<div class=table-container><table class=query-params>
+		<tr> <td>allow_nsfw <td>Boolean ("true" or "false" only) <td> Whether to include NSFW emotes in the result set.
+	</table></div>
+	{% endif %}
 	{% endmacro %}
 
 	{% call endpoint('Test token', 'test-token', 'GET', '/login', authed=True) %}
@@ -138,26 +145,36 @@
 		One <a href="#emote-object">emote object</a> that was deleted on success.
 	{% endcall %}
 
-	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes') %}
+	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes', nsfw_param=True) %}
 		List of <a href="#emote-object">emote objects</a>.
 	{% endcall %}
 
-	{% call endpoint('List Emotes By Author', 'list-emotes-by-author', 'GET', '/emotes/{emote.author}') %}
+	{% call endpoint(
+		'List Emotes By Author',
+		'list-emotes-by-author',
+		'GET', '/emotes/{emote.author}',
+		nsfw_param=True)
+	%}
 		List of <a href="#emote-object">emote objects</a> that were created by <code>emote.author</code>.
 	{% endcall %}
 
-	{% call endpoint('Search Emotes', 'search-emotes', 'GET', '/search/{query}') %}
+	{% call endpoint('Search Emotes', 'search-emotes', 'GET', '/search/{query}', nsfw_param=True) %}
 		List of <a href="#emote-object">emote objects</a> whose name is <em>similar</em> to <code>query</code>.
 		Similarity is tested using <a href="https://www.postgresql.org/docs/current/static/pgtrgm.html">trigram matching</a>.
 	{% endcall %}
 
-	{% call endpoint('List Popular Emotes', 'list-popular-emotes', 'GET', '/popular') %}
+	{% call endpoint('List Popular Emotes', 'list-popular-emotes', 'GET', '/popular', nsfw_param=True) %}
 		List of all <a href="#emote-with-usage-object">emotes with usage</a>, sorted by popularity.
 
 		A maximum of 200 emotes will be returned.
 	{% endcall %}
 
-	{% call endpoint('List Popular Emotes By Author', 'list-popular-emotes-by-author', 'GET', '/popular/{emote.author}') %}
+	{% call endpoint(
+		'List Popular Emotes By Author',
+		'list-popular-emotes-by-author',
+		'GET', '/popular/{emote.author}',
+		nsfw_param=True) 
+	%}
 		List of <a href="#emote-object">emote objects</a> that were created by <code>emote.author</code>, sorted
 		by popularity. A maximum of 200 emotes will be returned.
 	{% endcall %}

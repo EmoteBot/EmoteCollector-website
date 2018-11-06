@@ -138,7 +138,8 @@ async def create_emote_from_data(request):
 
 @routes.get(api_prefix+'/emotes')
 async def list(request):
-	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes()]
+	allow_nsfw = _should_allow_nsfw(request)
+	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(allow_nsfw=allow_nsfw)]
 	return web.json_response(results)
 
 @routes.get(api_prefix+'/emotes/{author}')
@@ -148,17 +149,21 @@ async def list_by_author(request):
 	except ValueError:
 		raise HTTPBadRequest('Author ID must be a snowflake.')
 
-	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(author_id)]
+	allow_nsfw = _should_allow_nsfw(request)
+	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(author_id, allow_nsfw=allow_nsfw)]
 	return web.json_response(results)
 
 @routes.get(api_prefix+'/search/{query}')
 async def search(request):
-	results = [_marshal_emote(emote) async for emote in db_cog.search(request.match_info['query'])]
+	allow_nsfw = _should_allow_nsfw(request)
+	query = request.match_info['query']
+	results = [_marshal_emote(emote) async for emote in db_cog.search(query, allow_nsfw=allow_nsfw)]
 	return web.json_response(results)
 
 @routes.get(api_prefix+'/popular')
 async def popular(request):
-	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes() if emote.usage]
+	allow_nsfw = _should_allow_nsfw(request)
+	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes(allow_nsfw=allow_nsfw)]
 	return web.json_response(results)
 
 # why is this route necessary?
@@ -171,14 +176,25 @@ async def popular_by_author(request):
 	except ValueError:
 		raise HTTPBadRequest('Author ID must be a snowflake.')
 
-	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes(author_id)]
+	allow_nsfw = _should_allow_nsfw(request)
+	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes(author_id, allow_nsfw=allow_nsfw)]
 	return web.json_response(results)
+
+def _should_allow_nsfw(request):
+	return _unmarshal_bool(request.rel_url.query.get('allow_nsfw', 'true'))
 
 @routes.get(api_prefix+'/docs')
 async def docs(request):
 	return await render_template('api_doc.html',
 		urls=filter(None, (config['url'], *config['onions'].values())),
 		prefix=config['prefix'])
+
+def _unmarshal_bool(x):
+	if x == 'true':
+		return True
+	if x == 'false':
+		return False
+	raise HTTPBadRequest('boolean param was not "true" or "false"')
 
 def _marshal_emote(emote):
 	EPOCH = 1518652800  # February 15, 2018, the date of the first emote
