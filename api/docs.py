@@ -7,7 +7,7 @@ from .constants import API_PREFIX
 routes = web.RouteTableDef()
 environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), enable_async=True)
 
-urls = tuple(url for url in (config['url'], *config['onions'].values()) if url)
+urls = tuple(url + API_PREFIX for url in (config['url'], *config['onions'].values()) if url)
 
 @routes.get(API_PREFIX+'/docs')
 async def docs(request):
