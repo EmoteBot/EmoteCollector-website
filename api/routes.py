@@ -86,7 +86,7 @@ async def edit_emote(request):
 		raise HTTPBadRequest('no edits were specified')
 
 	if 'description' in json:
-		result = await db_cog.set_emote_description(name, user_id, json['description'])
+		result = await db_cog.set_emote_description(name, json['description'], user_id)
 
 	if 'name' in json:
 		result = await db_cog.rename_emote(name, json['name'], user_id)
