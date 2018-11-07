@@ -5,15 +5,12 @@ from aiohttp import web
 import discord
 from emote_collector.utils import errors as emote_collector_errors
 from emote_collector import utils as emote_collector_utils
-import jinja2
 
 from bot import *
+from .constants import API_PREFIX
 from .errors import *
 
 routes = web.RouteTableDef()
-api_prefix = '/api/v0'
-
-environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), enable_async=True)
 
 def db_route(func):
 	async def wrapped(request):
@@ -63,7 +60,7 @@ def requires_auth(func):
 
 	return authed_route
 
-@routes.get(api_prefix+'/emote/{name}')
+@routes.get(API_PREFIX+'/emote/{name}')
 @db_route
 async def emote(request):
 	name = request.match_info['name']
@@ -72,12 +69,12 @@ async def emote(request):
 	emote.usage = await db_cog.get_emote_usage(emote)
 	return emote_response(emote)
 
-@routes.get(api_prefix+'/login')
+@routes.get(API_PREFIX+'/login')
 @requires_auth
 async def login(request):
 	return web.json_response(str(request.user_id))
 
-@routes.patch(api_prefix+'/emote/{name}')
+@routes.patch(API_PREFIX+'/emote/{name}')
 @requires_auth
 async def edit_emote(request):
 	name = request.match_info['name']
@@ -96,7 +93,7 @@ async def edit_emote(request):
 
 	return emote_response(result)
 
-@routes.delete(api_prefix+'/emote/{name}')
+@routes.delete(API_PREFIX+'/emote/{name}')
 @requires_auth
 async def delete_emote(request):
 	name = request.match_info['name']
@@ -104,7 +101,7 @@ async def delete_emote(request):
 
 	return emote_response(await db_cog.remove_emote(name, user_id))
 
-@routes.put(api_prefix+'/emote/{name}/{url}')
+@routes.put(API_PREFIX+'/emote/{name}/{url}')
 @requires_auth
 async def create_emote(request):
 	name, url = map(request.match_info.get, ('name', 'url'))
@@ -119,7 +116,7 @@ async def create_emote(request):
 	except ValueError:
 		raise HTTPBadRequest('invalid URL')
 
-@routes.put(api_prefix+'/emote/{name}')
+@routes.put(API_PREFIX+'/emote/{name}')
 @requires_auth
 async def create_emote_from_data(request):
 	if not request.can_read_body:
@@ -136,13 +133,13 @@ async def create_emote_from_data(request):
 	except emote_collector_errors.InvalidImageError:
 		raise HTTPUnsupportedMediaType('PNG, GIF, or JPEG required in body')
 
-@routes.get(api_prefix+'/emotes')
+@routes.get(API_PREFIX+'/emotes')
 async def list(request):
 	allow_nsfw = _should_allow_nsfw(request)
 	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(allow_nsfw=allow_nsfw)]
 	return web.json_response(results)
 
-@routes.get(api_prefix+'/emotes/{author}')
+@routes.get(API_PREFIX+'/emotes/{author}')
 async def list_by_author(request):
 	try:
 		author_id = int(request.match_info['author'])
@@ -153,14 +150,14 @@ async def list_by_author(request):
 	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(author_id, allow_nsfw=allow_nsfw)]
 	return web.json_response(results)
 
-@routes.get(api_prefix+'/search/{query}')
+@routes.get(API_PREFIX+'/search/{query}')
 async def search(request):
 	allow_nsfw = _should_allow_nsfw(request)
 	query = request.match_info['query']
 	results = [_marshal_emote(emote) async for emote in db_cog.search(query, allow_nsfw=allow_nsfw)]
 	return web.json_response(results)
 
-@routes.get(api_prefix+'/popular')
+@routes.get(API_PREFIX+'/popular')
 async def popular(request):
 	allow_nsfw = _should_allow_nsfw(request)
 	results = [_marshal_emote(emote) async for emote in db_cog.popular_emotes(allow_nsfw=allow_nsfw)]
@@ -169,7 +166,8 @@ async def popular(request):
 # why is this route necessary?
 # you actually can't just filter /popular by author, because that will only return the first N emotes
 # so if the user made an emote that has 3 uses, it probably won't show up in /popular
-@routes.get(api_prefix+'/popular/{author}')
+
+@routes.get(API_PREFIX+'/popular/{author}')
 async def popular_by_author(request):
 	try:
 		author_id = int(request.match_info['author'])
@@ -182,12 +180,6 @@ async def popular_by_author(request):
 
 def _should_allow_nsfw(request):
 	return _unmarshal_bool(request.rel_url.query.get('allow_nsfw', 'true'))
-
-@routes.get(api_prefix+'/docs')
-async def docs(request):
-	return await render_template('api_doc.html',
-		urls=filter(None, (config['url'], *config['onions'].values())),
-		prefix=config['prefix'])
 
 def _unmarshal_bool(x):
 	if x == 'true':
@@ -236,8 +228,3 @@ async def _marshaled_iterator(iterator):
 
 def emote_response(emote):
 	return web.json_response(_marshal_emote(emote))
-
-async def render_template(template, **kwargs):
-	return web.Response(
-		text=await environment.get_template(template).render_async(**kwargs),
-		content_type='text/html')

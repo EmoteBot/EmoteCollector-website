@@ -7,8 +7,11 @@ import re
 from aiohttp import web
 
 from .middleware import error_middleware
-from .routes import routes
+from .docs import routes as docs_routes
+from .routes import routes as api_routes
 
 app = web.Application(client_max_size=16 * 1024**2)  # controls max size of PUT/POST request data
-app.add_routes(routes)
+for routes in docs_routes, api_routes:
+	app.add_routes(routes)
+
 app.middlewares.append(error_middleware)
