@@ -33,6 +33,12 @@
 	{# sometimes it just takes a while to load, even longer than the first emote #}
 	<link rel=prefetch href=/img/jar.png>
 
+	{% if not allow_nsfw %}
+		<a href="{{ request.path }}?allow_nsfw">Show all emotes (possibly NSFW)</a>
+	{% else %}
+		<a href="{{ request.path }}">Show only safe for work emotes</a>
+	{% endif %}
+
 	<table>
 	<thead><tr>
 		<th class=emote-column>Emote</th>

@@ -26,10 +26,13 @@ environment.globals['v3_onion'] = config['onions'][3]
 @routes.get('/list/{author:\d+}')
 async def list(request):
 	author = _int_or_none(request.match_info.get('author'))
+	allow_nsfw = 'allow_nsfw' in request.query
+
 	return await render_template('list.html',
-		emotes=db_cog.all_emotes(author),
+		emotes=db_cog.all_emotes(author, allow_nsfw=allow_nsfw),
 		author=author,
-		request=request)
+		request=request,
+		allow_nsfw=allow_nsfw)
 
 async def render_template(template, **kwargs):
 	rendered = await environment.get_template(template).render_async(**kwargs)
