@@ -124,7 +124,7 @@ async def create_emote_from_data(request):
 
 	name = request.match_info['name']
 	author = request.user_id
-	image = io.BytesIO(await request.read())
+	image = await request.read()
 
 	try:
 		return emote_response(await emotes_cog.create_emote_from_bytes(name, author, image))
