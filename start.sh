@@ -10,6 +10,7 @@ start() {
 		--workers 1 \
 		--threads 4 \
 		--max-requests 10000 \
+		--timeout 120 \
 		--reload \
 		--bind "$ip":"$port" "$module":app
 }
