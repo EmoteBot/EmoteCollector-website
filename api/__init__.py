@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-import asyncio
-import re
-
 from aiohttp import web
 
 from .middleware import error_middleware

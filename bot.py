@@ -12,7 +12,7 @@ config = utils.load_json_compat('config.py')
 
 loop = asyncio.get_event_loop()
 bot = EmoteCollector(config=config, loop=loop)
-loop.run_until_complete(bot._init_db())
+loop.run_until_complete(bot.init_db())
 bot.load_extension('emote_collector.extensions.db')
 bot.load_extension('emote_collector.extensions.emote')
 bot.load_extension('emote_collector.extensions.api')

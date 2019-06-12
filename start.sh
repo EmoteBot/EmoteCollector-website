@@ -15,10 +15,6 @@ start() {
 }
 
 start app "${EC_WEBSITE_PORT:-8080}" "$EC_WEBSITE_IP" &
-# running the schema code from the bot requires an exclusive lock on the database
-# so we can't have them both run at the same time
-# XXX this is a bunk way to synchronize processes
-sleep 2
 start api "${EC_API_PORT:-8081}" "$EC_API_IP" &
 
 wait
