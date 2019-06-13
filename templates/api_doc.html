@@ -96,11 +96,13 @@
 		{% endif %}
 		{{ caller() }}
 	</p>
-	{% if nsfw_param %}
+	{% if nsfw_param or params %}
 	<h4>Query Parameters</h4>
 
 	<div class=table-container><table class=query-params>
-		<tr> <td>allow_nsfw <td>Boolean ("true" or "false" only) <td> Whether to include NSFW emotes in the result set.
+		{% if nsfw_param %}
+		<tr> <td>allow_nsfw? <td>Boolean ("true" or "false" only) <td> Whether to include NSFW emotes in the result set. Defaults to true.
+		{% endif %}
 		{{ params }}
 	</table></div>
 	{% endif %}
