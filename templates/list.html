@@ -34,9 +34,11 @@
 	<link rel=prefetch href=/img/jar.png>
 
 	{% if not allow_nsfw %}
-		<a href="{{ request.path }}?allow_nsfw">Show all emotes (possibly NSFW)</a>
+		<a href="{{ request.path }}{{ add_query_param(allow_nsfw='') }}">
+			Show all emotes (possibly NSFW)
+		</a>
 	{% else %}
-		<a href="{{ request.path }}">Show only safe for work emotes</a>
+		<a href="{{ request.path }}{{ remove_query_param('allow_nsfw') }}">Show only safe for work emotes</a>
 	{% endif %}
 
 	<table>
