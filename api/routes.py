@@ -134,9 +134,10 @@ async def create_emote_from_data(request):
 		raise HTTPUnsupportedMediaType('PNG, GIF, or JPEG required in body')
 
 @routes.get(API_PREFIX+'/emotes')
-async def list(request):
+async def list_(request):
 	allow_nsfw = _should_allow_nsfw(request)
-	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(allow_nsfw=allow_nsfw)]
+	after = request.rel_url.query.get('after')
+	results = list(map(_marshal_emote, await db_cog.all_emotes_keyset(allow_nsfw=allow_nsfw, after=after)))
 	return web.json_response(results)
 
 @routes.get(API_PREFIX+'/emotes/{author}')
@@ -147,7 +148,8 @@ async def list_by_author(request):
 		raise HTTPBadRequest('Author ID must be a snowflake.')
 
 	allow_nsfw = _should_allow_nsfw(request)
-	results = [_marshal_emote(emote) async for emote in db_cog.all_emotes(author_id, allow_nsfw=allow_nsfw)]
+	after = request.rel_url.query.get('after')
+	results = list(map(_marshal_emote, await db_cog.all_emotes_keyset(author_id, allow_nsfw=allow_nsfw, after=after)))
 	return web.json_response(results)
 
 @routes.get(API_PREFIX+'/search/{query}')

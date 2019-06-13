@@ -84,7 +84,7 @@
 
 	<h2>Endpoints</h2>
 
-	{% macro endpoint(title, slug, method, url, authed=False, nsfw_param=False) %}
+	{% macro endpoint(title, slug, method, url, authed=False, nsfw_param=False, after_param=False, params='') %}
 	<h3 class=http-req-title id="{{ slug }}">
 		{{ title }}
 		<a href="#{{ slug }}" class=header-link><img src=/img/link.png></a>
@@ -101,6 +101,7 @@
 
 	<div class=table-container><table class=query-params>
 		<tr> <td>allow_nsfw <td>Boolean ("true" or "false" only) <td> Whether to include NSFW emotes in the result set.
+		{{ params }}
 	</table></div>
 	{% endif %}
 	{% endmacro %}
@@ -145,8 +146,12 @@
 		One <a href="#emote-object">emote object</a> that was deleted on success.
 	{% endcall %}
 
-	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes', nsfw_param=True) %}
-		List of <a href="#emote-object">emote objects</a>.
+	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes', nsfw_param=True, params="""
+		<tr> <td> after? <td> {emote.name} <td> The name of the last emote that was sent as part of the last page.
+	""")
+	%}
+		List of <a href="#emote-object">emote objects</a>. This endpoint is paginated. After the first page, you
+		must pass the after parameter to get subsequent pages.
 	{% endcall %}
 
 	{% call endpoint(
