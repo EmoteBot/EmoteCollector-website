@@ -27,9 +27,10 @@ environment.globals['v3_onion'] = config['onions'][3]
 async def list(request):
 	author = _int_or_none(request.match_info.get('author'))
 	allow_nsfw = 'allow_nsfw' in request.query
+	after = request.rel_url.query.get('after')
 
 	return await render_template('list.html',
-		emotes=db_cog.all_emotes(author, allow_nsfw=allow_nsfw),
+		emotes=await db_cog.all_emotes_keyset(author, allow_nsfw=allow_nsfw, after=after),
 		author=author,
 		request=request,
 		allow_nsfw=allow_nsfw)

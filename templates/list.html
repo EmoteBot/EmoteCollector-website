@@ -86,6 +86,10 @@
 
 	</table>
 
+	{% if emotes %}
+		<a href="?after={{ emotes[-1].name }}">Next page</a>
+	{% endif %}
+
 	<footer>
 		<a href="https://icons8.com/icon/69253/empty-jam-jar">Empty Jam Jar icon</a>
 		was provided by Icons8 and used under the terms of the
