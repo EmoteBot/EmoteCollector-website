@@ -40,9 +40,12 @@ environment.globals['v3_onion'] = config['onions'][3]
 environment.globals['add_query_param'] = add_query_param
 environment.globals['remove_query_param'] = remove_query_param
 
+def url(request):
+	return f'{request.headers["X-Forwarded-Scheme"]}://{request.headers["X-Forwarded-From"]}{request.rel_url}'
+
 @routes.get('/index')
 async def index(request):
-	return await render_template('index.html')
+	return await render_template('index.html', url=url(request))
 
 @routes.get('/list')
 @routes.get('/list/{author:\d+}')
@@ -58,6 +61,7 @@ async def list(request):
 		emotes=await db_cog.all_emotes_keyset(author, allow_nsfw=allow_nsfw, before=before, after=after),
 		author=author,
 		request=request,
+		url=url(request),
 		allow_nsfw=allow_nsfw)
 
 async def render_template(template, **kwargs):
