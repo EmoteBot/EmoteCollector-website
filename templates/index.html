@@ -17,6 +17,7 @@
 {% endblock %}
 
 {% block header %}
+	{{ super() }}
 	<img src=/img/avatar.png><br>
 	Emote Collector is a bot that collects emotes from any server and lets you use them without Nitro.
 {% endblock %}
@@ -81,5 +82,10 @@
 		</a><br>
 		<a href="https://discord.gg/SfRnkJB">Join the support server</a><br>
 		<a href="https://discordbots.org/bot/405953712113057794">Upvote it on Discord Bots List</a>
+	</p>
+
+	<h2>What else is here?</h2>
+	<p>
+		There's also a <a href="/list">list of all emotes</a> and documentation for the <a href="/api/v0/docs">REST API</a>.
 	</p>
 {% endblock %}
