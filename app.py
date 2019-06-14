@@ -45,10 +45,13 @@ environment.globals['remove_query_param'] = remove_query_param
 async def list(request):
 	author = _int_or_none(request.match_info.get('author'))
 	allow_nsfw = 'allow_nsfw' in request.query
+	before = request.query.get('before')
 	after = request.query.get('after')
+	if before is not None and after is not None:
+		raise web.HTTPBadRequest(reason='only one of before, after may be specified')
 
 	return await render_template('list.html',
-		emotes=await db_cog.all_emotes_keyset(author, allow_nsfw=allow_nsfw, after=after),
+		emotes=await db_cog.all_emotes_keyset(author, allow_nsfw=allow_nsfw, before=before, after=after),
 		author=author,
 		request=request,
 		allow_nsfw=allow_nsfw)
