@@ -98,8 +98,15 @@
 	</p>
 	{% if nsfw_param or params %}
 	<h4>Query Parameters</h4>
-
+	<p>
+		A <code>?</code> following the name of a parameter indicates that it need not be provided.
+	</p>
 	<div class=table-container><table class=query-params>
+		<thead><tr>
+			<th>Parameter name
+			<th>Type
+			<th>Description
+		</tr></thead>
 		{% if nsfw_param %}
 		<tr> <td>allow_nsfw? <td>Boolean ("true" or "false" only) <td> Whether to include NSFW emotes in the result set. Defaults to true.
 		{% endif %}
@@ -150,10 +157,12 @@
 
 	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes', nsfw_param=True, params="""
 		<tr> <td> after? <td> {emote.name} <td> The name of the last emote that was sent as part of the last page.
+		<td> <td> before? <td> {emote.name} <td> One page of results before this emote will be returned if specified.
 	""")
 	%}
 		List of <a href="#emote-object">emote objects</a>. This endpoint is paginated. After the first page, you
-		must pass the after parameter to get subsequent pages.
+		must pass the after parameter to get subsequent pages. You may also pass the before parameter to get previous
+		pages.
 	{% endcall %}
 
 	{% call endpoint(

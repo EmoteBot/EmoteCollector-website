@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 import asyncio
-from functools import partial
+from urllib.parse import parse_qsl
 
 from aiohttp import web
 from emote_collector import utils
@@ -21,10 +21,14 @@ environment.trim_blocks = True
 environment.lstrip_blocks = True
 
 def add_query_param(query_dict, **params):
+	if isinstance(query_dict, str):
+		query_dict = dict(parse_qsl(query_dict.lstrip('?')))
 	new = {**query_dict, **params}
 	return urlencode(new)
 
 def remove_query_param(query_dict, *params):
+	if isinstance(query_dict, str):
+		query_dict = parse_qsl(query_dict.lstrip('?'))
 	d = dict(query_dict)
 	for param in params:
 		d.pop(param, None)
@@ -33,6 +37,8 @@ def remove_query_param(query_dict, *params):
 environment.globals['emote_url'] = emote_utils.url
 environment.globals['v2_onion'] = config['onions'][2]
 environment.globals['v3_onion'] = config['onions'][3]
+environment.globals['add_query_param'] = add_query_param
+environment.globals['remove_query_param'] = remove_query_param
 
 @routes.get('/list')
 @routes.get('/list/{author:\d+}')
@@ -43,8 +49,6 @@ async def list(request):
 
 	return await render_template('list.html',
 		emotes=await db_cog.all_emotes_keyset(author, allow_nsfw=allow_nsfw, after=after),
-		add_query_param=partial(add_query_param, request.query),
-		remove_query_param=partial(remove_query_param, request.query),
 		author=author,
 		request=request,
 		allow_nsfw=allow_nsfw)
