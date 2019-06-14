@@ -1,6 +1,21 @@
 import sys
 from urllib.parse import quote_plus
 
+from aiohttp import web
+import jinja2
+
+def url(request, *, include_path=True):
+	return (
+		f'{request.headers["X-Forwarded-Scheme"]}://{request.headers["X-Forwarded-From"]}'
+		f'{request.rel_url if include_path else ""}')
+
+async def render_template(template, environment=None, **kwargs):
+	if environment is None:
+		environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), enable_async=True)
+
+	rendered = await environment.get_template(template).render_async(**kwargs)
+	return web.Response(text=rendered, content_type='text/html')
+
 # this is the same as urllib.parse.urlencode except:
 # - it encodes {'foo': ''} as 'foo', not 'foo='
 # - it adds a ? at the beginning of the return value, but only if there were any query params to begin with

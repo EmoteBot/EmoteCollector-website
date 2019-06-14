@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import asyncio
+from functools import partial
 from urllib.parse import parse_qsl
 
 from aiohttp import web
@@ -10,7 +11,7 @@ from emote_collector.utils import emote as emote_utils
 import jinja2
 
 from bot import *
-from utils import urlencode
+from utils import urlencode, url, render_template
 
 app = web.Application()
 routes = web.RouteTableDef()
@@ -19,6 +20,8 @@ environment = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'), en
 
 environment.trim_blocks = True
 environment.lstrip_blocks = True
+
+render_template = partial(render_template, environment=environment)
 
 def add_query_param(query_dict, **params):
 	if isinstance(query_dict, str):
@@ -40,11 +43,6 @@ environment.globals['v3_onion'] = config['onions'][3]
 environment.globals['add_query_param'] = add_query_param
 environment.globals['remove_query_param'] = remove_query_param
 
-def url(request, *, include_path=True):
-	return (
-		f'{request.headers["X-Forwarded-Scheme"]}://{request.headers["X-Forwarded-From"]}'
-		f'{request.rel_url if include_path else ""}')
-
 @routes.get('/index')
 async def index(request):
 	return await render_template('index.html', url=url(request, include_path=False))
@@ -65,10 +63,6 @@ async def list(request):
 		request=request,
 		url=url(request),
 		allow_nsfw=allow_nsfw)
-
-async def render_template(template, **kwargs):
-	rendered = await environment.get_template(template).render_async(**kwargs)
-	return web.Response(text=rendered, content_type='text/html')
 
 def _int_or_none(x):
 	try:

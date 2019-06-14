@@ -3,6 +3,11 @@
 {% block head %}
 	{{ super() }}
 	<link rel=stylesheet href=/css/api_doc.css>
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="Emote Collector">
+	<meta property="og:description" content="Documentation for Emote Collector's REST API.">
+	<meta property="og:url" content="{{ url }}">
+	<meta property="og:image" content="/img/avatar.png">
 {% endblock %}
 
 {% block title %} Emote Collector API docs {% endblock %}

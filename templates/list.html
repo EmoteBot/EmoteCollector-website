@@ -10,6 +10,11 @@
 {% block head %}
 	{{ super() }}
 	<link rel=stylesheet href=/css/list.css>
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Emote Collector List">
+	<meta property="og:description" content="List of all emotes in Emote Collector's database.">
+	<meta property="og:url" content="{{ url }}">
+	<meta property="og:image" content="/img/avatar.png">
 {% endblock %}
 
 {% block header %}
