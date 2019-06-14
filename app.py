@@ -40,12 +40,14 @@ environment.globals['v3_onion'] = config['onions'][3]
 environment.globals['add_query_param'] = add_query_param
 environment.globals['remove_query_param'] = remove_query_param
 
-def url(request):
-	return f'{request.headers["X-Forwarded-Scheme"]}://{request.headers["X-Forwarded-From"]}{request.rel_url}'
+def url(request, *, include_path=True):
+	return (
+		f'{request.headers["X-Forwarded-Scheme"]}://{request.headers["X-Forwarded-From"]}'
+		f'{request.rel_url if include_path else ""}')
 
 @routes.get('/index')
 async def index(request):
-	return await render_template('index.html', url=url(request))
+	return await render_template('index.html', url=url(request, include_path=False))
 
 @routes.get('/list')
 @routes.get('/list/{author:\d+}')
