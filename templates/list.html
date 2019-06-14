@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block title %}
-	{{ 'List of all emotes' }}
+	List of all emotes
 	{% if author is not none %}
-		{{ ' by author ID %d' % author }}
+		by author ID {{ author }}
 	{% endif %}
 {% endblock %}
 

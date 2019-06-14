@@ -40,6 +40,10 @@ environment.globals['v3_onion'] = config['onions'][3]
 environment.globals['add_query_param'] = add_query_param
 environment.globals['remove_query_param'] = remove_query_param
 
+@routes.get('/index')
+async def index(request):
+	return await render_template('index.html')
+
 @routes.get('/list')
 @routes.get('/list/{author:\d+}')
 async def list(request):

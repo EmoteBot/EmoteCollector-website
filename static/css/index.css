@@ -1,0 +1,6 @@
+img.emote {
+	max-width: 32px;
+	max-height: 32px;
+	-o-object-fit: contain;
+	object-fit: contain;
+	vertical-align: text-bottom;}
