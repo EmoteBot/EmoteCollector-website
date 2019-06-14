@@ -41,6 +41,15 @@
 		<a href="{{ remove_query_param(request.query, 'allow_nsfw') }}">Show only safe for work emotes</a>
 	{% endif %}
 
+	{% set navigation %}
+		{% if emotes %}
+			<a href="{{ add_query_param(remove_query_param(request.query, 'after'), before=emotes[0].name) }}">Previous page</a>
+			<a href="{{ add_query_param(remove_query_param(request.query, 'before'), after=emotes[-1].name) }}">Next page</a>
+		{% endif %}
+	{% endset %}
+	<br>
+	{{ navigation }}
+
 	<table>
 	<thead><tr>
 		<th class=emote-column>Emote</th>
@@ -88,10 +97,7 @@
 
 	</table>
 
-	{% if emotes %}
-		<a href="{{ add_query_param(remove_query_param(request.query, 'after'), before=emotes[0].name) }}">Previous page</a>
-		<a href="{{ add_query_param(remove_query_param(request.query, 'before'), after=emotes[-1].name) }}">Next page</a>
-	{% endif %}
+	{{ navigation }} 
 
 	<footer>
 		<a href="https://icons8.com/icon/69253/empty-jam-jar">Empty Jam Jar icon</a>
