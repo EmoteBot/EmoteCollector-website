@@ -1,7 +1,5 @@
 body {
-	font-weight: unset; /* Milligram's font weight is too light */}
-
-#container {
+	font-weight: unset; /* Milligram's font weight is too light */
 	/* fix for those   l o n g   v3 onions */
 	word-wrap: break-word;
 
@@ -9,10 +7,11 @@ body {
 	max-width: 50em;
 	width: 100%;
 
-	/* put on a nice 3d-ish paper looking border */
+	align: center;
+
+	/* center the page */
 	margin: 0.2em auto;
-	padding: 2em;
-	box-shadow: 0em 0.3em 1.3em rgba(0,0,0,0.2);}
+	padding: 2em;}
 
 header {
 	text-align: center;}

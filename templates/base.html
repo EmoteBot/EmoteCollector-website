@@ -10,14 +10,12 @@
 	{% endblock %}
 </head>
 <body>
-	<div id=container>
-		<header>
-			{% block header %}
-			<h1>{{ self.title() }}</h1>
-			{% endblock %}
-		</header>
-		{% block content %}
+	<header>
+		{% block header %}
+		<h1>{{ self.title() }}</h1>
 		{% endblock %}
-	</div>
+	</header>
+	{% block content %}
+	{% endblock %}
 </body>
 </html>
