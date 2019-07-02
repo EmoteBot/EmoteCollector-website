@@ -49,7 +49,7 @@ async def index(request):
 
 @routes.get('/list')
 @routes.get('/list/{author:\d+}')
-async def list(request):
+async def list_(request):
 	author = _int_or_none(request.match_info.get('author'))
 	allow_nsfw = 'allow_nsfw' in request.query
 	before = request.query.get('before')
@@ -63,6 +63,10 @@ async def list(request):
 		request=request,
 		url=url(request),
 		allow_nsfw=allow_nsfw)
+
+@routes.get('/e0-list')
+async def e0_list(request):
+	return web.FileResponse('templates/e0-list.html')
 
 def _int_or_none(x):
 	try:

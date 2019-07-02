@@ -14,6 +14,7 @@
 		header_upstream X-Forwarded-Scheme {scheme}
 		header_upstream X-Forwarded-From {host}
 	}
+	proxy /e0-list localhost:8080
 	proxy /api localhost:8081 {
 		header_upstream X-Forwarded-Scheme {scheme}
 		header_upstream X-Forwarded-From {host}
