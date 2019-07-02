@@ -23,33 +23,33 @@
 {% endblock %}
 
 {% block content %}
-	<h2>How do I use it?</h2>
+	<h2 id=intro>How do I use it?</h2>
 	<p>
 		Start by finding some <a href=/list>emotes</a> you want to use.
 		Then say the name of the emote with colons (e.g. :thonkang:) on either side, just like you would a normal emote.
 		Using semicolons (;speedtest;) is also supported.
 	</p>
-	<h2>Commands</h2>
 
-	<p>
+	<h2 id=commands>Commands</h2>
+	<p id=add-command>
 		To add an emote:
 		<ul>
 			<li><code>ec/add <img class="emote" src="https://cdn.discordapp.com/emojis/407347328606011413.png?v=1" alt=":thonkang:" title=":thonkang:"></code> (if you already have that emote)</li>
 			<li><code>ec/add rollsafe https://image.noelshack.com/fichiers/2017/06/1486495269-rollsafe.png</code></li>
-			<li><code>ec/add speedtest https://cdn.discordapp.com/emojis/379127000398430219.png</code></li>
+			<li><code>ec/add speedtest &lt;https://cdn.discordapp.com/emojis/379127000398430219.png&gt;</code></li>
 		</ul>
 		If you run <code>ec/add</code> with an image upload, the image will be used as the emote image, and the filename will be used as the emote name. To choose a different name, simply run it like<br>
 		<code>ec/add :some_emote:</code> instead.
 	</p>
 
-	<p>
+	<p id=info-command>
 		Running <code>ec/info :some_emote:</code> will show you some information about the emote,
 		including when it was created and how many times it's been used.
 	</p>
 
 	<p>Running <code>ec/big :some_emote:</code> will enlarge the emote.</p>
 
-	<p>
+	<p id=react-command>
 		There's a few ways to react to a message with an emote you don't have:
 		<ul>
 			<li><code>ec/react speedtest</code> will react with <img src="https://cdn.discordapp.com/emojis/410183865701892106.png?v=1" class="emote" alt=":speedtest:" title=":speedtest:"> to the last message.
@@ -62,12 +62,12 @@
 		<img src=/img/ec-react-demo.gif alt="demonstration of how the ec/react command works">
 	</p>
 
-	<p>
+	<p id=list-command>
 		<code>ec/list [user]</code> gives you a list of all emotes. If you provide a user (IDs, names, and @mentions all work),
 		then the bot will limit the list to only emotes created by that user.
 	</p>
 
-	<p>
+	<p id=popular-command>
 	  <code>ec/popular</code> will list all emotes, sorted by how often they've been used within the last 4 weeks.
 	</p>
 
