@@ -1,4 +1,5 @@
 (conf) {
+	cors
 	root static/
 	rewrite {
 		regexp /$
