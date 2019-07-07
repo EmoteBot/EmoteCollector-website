@@ -3,8 +3,7 @@
 {% block title %}
 	List of all emotes
 	{% if author is not none %}
-		by author ID {{ author }}
-	{% endif %}
+		by author ID {{ author }}{% endif %}
 {% endblock %}
 
 {% block head %}
@@ -12,7 +11,7 @@
 	<link rel=stylesheet href=/css/list.css>
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="Emote Collector List">
-	<meta property="og:description" content="List of all emotes in Emote Collector's database.">
+	<meta property="og:description" content="{{ self.title() }} in Emote Collector's database.">
 	<meta property="og:url" content="{{ url }}">
 	<meta property="og:image" content="/img/avatar.png">
 {% endblock %}
@@ -85,7 +84,7 @@
 			<td lang=""><span class="data">{{ emote.name }}</span></td>
 
 			{% if author is none %}
-				<td><span class="data">{{ emote.author }}</span></td>
+				<td><a href={{ emote.author }}><span class="data">{{ emote.author }}</span></a></td>
 			{% endif %}
 
 			<td>
