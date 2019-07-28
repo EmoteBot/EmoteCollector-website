@@ -83,7 +83,7 @@
 			<td lang=""><span class="data">{{ emote.name }}</span></td>
 
 			{% if author is none %}
-				<td><a href={{ emote.author }}><span class="data">{{ emote.author }}</span></a></td>
+				<td><a href="{{ request.path }}/{{ emote.author }}?{{ request.query_string }}"><span class="data">{{ emote.author }}</span></a></td>
 			{% endif %}
 
 			<td>
