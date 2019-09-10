@@ -23,25 +23,30 @@ environment.lstrip_blocks = True
 
 render_template = partial(render_template, environment=environment)
 
-def add_query_param(query_dict, **params):
-	if isinstance(query_dict, str):
-		query_dict = dict(parse_qsl(query_dict.lstrip('?')))
-	new = {**query_dict, **params}
-	return urlencode(new)
+def _add_query_param(query_dict, **params):
+	return {**query_dict, **params}
 
-def remove_query_param(query_dict, *params):
-	if isinstance(query_dict, str):
-		query_dict = parse_qsl(query_dict.lstrip('?'))
-	d = dict(query_dict)
+def add_query_param(request, **params):
+	return request.path + urlencode(_add_query_param(request.query, **params))
+
+def _remove_query_param(query_dict, *params):
+	d = query_dict.copy()
 	for param in params:
 		d.pop(param, None)
-	return urlencode(d)
+	return d
 
-environment.globals['emote_url'] = emote_utils.url
+def remove_query_param(request, *params):
+	return request.path + urlencode(_remove_query_param(request.query, *params))
+
+def update_query_param(request, *remove, **add,):
+	return request.path + urlencode(_add_query_param(_remove_query_param(request.query, *remove), **add))
+
 environment.globals['v2_onion'] = config['onions'][2]
 environment.globals['v3_onion'] = config['onions'][3]
-environment.globals['add_query_param'] = add_query_param
-environment.globals['remove_query_param'] = remove_query_param
+environment.globals['emote_url'] = emote_utils.url
+for func in add_query_param, remove_query_param, update_query_param:
+	environment.globals[func.__name__] = func
+del func
 
 @routes.get('/index')
 async def index(request):

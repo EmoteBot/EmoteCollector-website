@@ -37,17 +37,18 @@
 	<link rel=prefetch href=/img/jar.png>
 
 	{% if not allow_nsfw %}
-		<a href="{{ add_query_param(request.query, allow_nsfw='') }}">
+		<a href="{{ add_query_param(request, allow_nsfw='') }}">
 			Show all emotes (possibly NSFW)
 		</a>
 	{% else %}
-		<a href="{{ remove_query_param(request.query, 'allow_nsfw') }}">Show only safe for work emotes</a>
+		<a href="{{ remove_query_param(request, 'allow_nsfw') }}">
+			Show only safe for work emotes</a>
 	{% endif %}
 
 	{% set navigation %}
 		{% if emotes %}
-			<a href="{{ add_query_param(remove_query_param(request.query, 'after'), before=emotes[0].name) }}">Previous page</a>
-			<a href="{{ add_query_param(remove_query_param(request.query, 'before'), after=emotes[-1].name) }}">Next page</a>
+			<a href="{{ update_query_param(request, 'after', before=emotes[0].name)}}">Previous page</a>
+			<a href="{{ update_query_param(request, 'before', after=emotes[-1].name)}}">Next page</a>
 		{% endif %}
 	{% endset %}
 	<br>
