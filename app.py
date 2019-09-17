@@ -5,13 +5,14 @@ import asyncio
 from functools import partial
 from urllib.parse import parse_qsl
 
+import jinja2
 from aiohttp import web
 from emote_collector import utils
 from emote_collector.utils import emote as emote_utils
-import jinja2
+from yarl import URL
 
 from bot import *
-from utils import urlencode, url, render_template
+from utils import is_safe_url, urlencode, url, render_template
 
 app = web.Application()
 routes = web.RouteTableDef()
@@ -51,6 +52,31 @@ del func
 @routes.get('/index')
 async def index(request):
 	return await render_template('index.html', url=url(request, include_path=False))
+
+@routes.get('/confirm-18+')
+async def confirm_18plus(request):
+	target = request.query.get('next')
+	if target is None:
+		return web.HTTPTemporaryRedirect('/')
+	if not is_safe_url(request, target):
+		return web.HTTPBadRequest()
+	is_18plus = request.query.get('confirm')
+	if is_18plus is None:
+		return await render_template('confirm-18+.html', target=target)
+	elif is_18plus == 'false':
+		response = web.HTTPTemporaryRedirect('/')
+		return response
+	response = web.HTTPTemporaryRedirect(target)
+	response.cookies['18+'] = 'true'
+	return response
+
+@routes.get('/nsfw-handbook')
+async def nsfw_handbook(request):
+	if request.cookies.get('18+', 'false') != 'true':
+		# incredible that yarl.URL.with_query does not accept yarl.URLs lmao
+		url = URL('/confirm-18+').with_query(dict(next=str(request.rel_url)))
+		return web.HTTPTemporaryRedirect(url)
+	return await render_template('nsfw-handbook.html')
 
 @routes.get('/list')
 @routes.get('/list/{author:\d+}')

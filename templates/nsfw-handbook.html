@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}NSFW Handbook{% endblock title %}
+{% block content %}
+<p>Over the years, many emotes have tested the boundaries of NSFW content.
+For future reference, I will document them here.
+{% macro emote(name, animated=False, nsfw=False) %}
+<tr id={{ 'n' if nsfw }}sfw-{{ name }}>
+<td><img
+	src=/img/nsfw-handbook/{{ 'n' if nsfw }}sfw/{{ name }}.{{ 'gif' if animated else 'png' }}
+	alt=":{{ name }}:"
+	title=":{{ name }}:">
+<td>{{ name }}
+<td>{{ caller() }}
+</tr>
+{% endmacro %}
+<h2>SFW emotes</h2>
+{% set table_header %}
+<thead><tr>
+	<th>Emote
+	<th>Name
+	<th>Reason
+</thead>
+{% endset %}
+<p>These are emotes that are questionably NSFW, but fall under "SFW" for the purposes of the bot.</p>
+<table>{{ table_header }}
+{% call emote('sexmaster') %}
+	If the content of the emote is SFW, the name does not factor into it.
+{% endcall %}
+{% call emote('gag') %}
+	This emote is from Spider-Man 3. It is therefore violent, not BDSM.
+	(The notion that violence is appropriate and sex is not is a discussion for another day…)
+{% endcall %}
+{% call emote('ocknut') %}
+	Same reason as <a href=#sfw-gag>:gag:</a>.
+{% endcall %}
+</table>
+<h2>
+{% endblock content %}

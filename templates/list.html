@@ -17,7 +17,7 @@
 
 {% block header %}
 	{{ super() }}
-	{% if not request.headers.get('X-Forwarded-From').endswith('onion') and (v2_onion or v3_onion) %}
+	{% if not request.headers.get('X-Forwarded-For', '').endswith('onion') and (v2_onion or v3_onion) %}
 		<p>
 			Now available as a
 			{% if v2_onion %}

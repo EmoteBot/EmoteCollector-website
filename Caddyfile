@@ -1,24 +1,18 @@
 (conf) {
-	cors
+	header / Access-Control-Allow-Origin *
 	root static/
 	rewrite {
 		regexp /$
 		to /index
 	}
-	proxy /index localhost:8080 {
-		# X-Forwarded-From is the hostname the user visited
-		# e.g. foo.com or bar.onion
-		header_upstream X-Forwarded-Scheme {scheme}
-		header_upstream X-Forwarded-From {host}
+	proxy / localhost:8080 {
+		header_upstream X-Forwarded-Proto {scheme}
+		header_upstream X-Forwarded-For {host}
+		except /img /css
 	}
-	proxy /list localhost:8080 {
-		header_upstream X-Forwarded-Scheme {scheme}
-		header_upstream X-Forwarded-From {host}
-	}
-	proxy /e0-list localhost:8080
 	proxy /api localhost:8081 {
-		header_upstream X-Forwarded-Scheme {scheme}
-		header_upstream X-Forwarded-From {host}
+		header_upstream X-Forwarded-Proto {scheme}
+		header_upstream X-Forwarded-For {host}
 	}
 }
 
