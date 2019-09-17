@@ -53,6 +53,8 @@ del func
 async def index(request):
 	return await render_template('index.html', url=url(request, include_path=False))
 
+ONE_YEAR = 60 * 60 * 24 * 365
+
 @routes.get('/confirm-18+')
 async def confirm_18plus(request):
 	target = request.query.get('next')
@@ -60,6 +62,8 @@ async def confirm_18plus(request):
 		return web.HTTPTemporaryRedirect('/')
 	if not is_safe_url(request, target):
 		return web.HTTPBadRequest()
+	if '18+' in request.cookies:
+		return web.HTTPTemporaryRedirect(target)
 	is_18plus = request.query.get('confirm')
 	if is_18plus is None:
 		return await render_template('confirm-18+.html', target=target)
@@ -67,12 +71,12 @@ async def confirm_18plus(request):
 		response = web.HTTPTemporaryRedirect('/')
 		return response
 	response = web.HTTPTemporaryRedirect(target)
-	response.cookies['18+'] = 'true'
+	response.set_cookie('18+', '', max_age=ONE_YEAR)
 	return response
 
 @routes.get('/nsfw-handbook')
 async def nsfw_handbook(request):
-	if request.cookies.get('18+', 'false') != 'true':
+	if '18+' not in request.cookies:
 		# incredible that yarl.URL.with_query does not accept yarl.URLs lmao
 		url = URL('/confirm-18+').with_query(dict(next=str(request.rel_url)))
 		return web.HTTPTemporaryRedirect(url)
