@@ -1,11 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}Here be dragons{% endblock %}
 {% block content %}
+<style>
+body {
+	width: 100%;
+	text-align: center;}
+</style>
 <form>
 <p>You must be at least 18 years of age to view this page.
 Are you over eighteen and willing to see adult content?</p>
 <input type=hidden name=next value="{{ target }}">
-<button name=confirm value=false type=submit>Nope</button>
+<button name=confirm value=false type=submit class=button-outline>Nope</button>
 <button name=confirm value=true  type=submit>Continue</button>
 </form>
 {% endblock %}
