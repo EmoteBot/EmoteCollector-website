@@ -10,4 +10,4 @@ urls = tuple(url + API_PREFIX for url in (config['url'], *config['onions'].value
 
 @routes.get(API_PREFIX+'/docs')
 async def docs(request):
-	return await render_template('api_doc.html', url=url(request), urls=urls, prefix=config['prefix'])
+	return await render_template('api_doc.html', url=url(request), urls=urls, prefix=config['prefixes'][0])
