@@ -1,12 +1,12 @@
 {
 	'description': '',
-	'prefix': 'ec/',
+	'prefixes': ['ec/'],
 
 	# change this user agent if you change the code
-	'user_agent': 'EmoteCollectorBot (https://github.com/EmoteCollector/bot)',
+	'user_agent': 'EmoteCollectorBot (https://github.com/EmoteCollector/EmoteCollector)',
 
 	# clearnet url
-	'url': 'https://emoji-connoisseur.python-for.life'
+	'url': 'https://ec.emote.bot'
 
 	'onions': {
 		# tor onion services for your instance
@@ -16,15 +16,10 @@
 		3: 'http://emotesdikhisgxdcmh7wtlvzfw2yxp4vmkyy6mu5wixzgqfmxvuotryd.onion'},
 
 	'api': {
-		'base_url': 'http://ec.localhost:2018/api/v0',  # for internal usage of the API
-		'docs_url': 'https://emoji-connoisseur.python-for.life/api/v0/docs'},
+		'docs_url': 'https://ec.emote.bot/api/v0/docs'},
 
 	'database': {
-		'user': 'connoisseur',
-		'password': r'hunter2',
-		'database': 'connoisseur',
-		'host': '127.0.0.1',
-		'port': 5432},
+		'database': 'ec'},
 
 	'tokens': {
 		'discord': 'sek.rit.token'}}
