@@ -1,17 +1,39 @@
 {% extends 'base.html' %}
+{% block head %}
+	{{ super() }}
+	<style>
+		img {
+			margin: 0;
+			padding: 0;
+			border: 0;}
+	</style>
+{% endblock %}
 {% block title %}NSFW Handbook{% endblock title %}
 {% block content %}
 <p>Over the years, many emotes have tested the boundaries of NSFW content.
 For future reference, I will document them here.
-{% macro emote(name, animated=False, nsfw=False) %}
-<tr id={{ 'n' if nsfw }}sfw-{{ name }}>
-<td><img
-	src=/img/nsfw-handbook/{{ 'n' if nsfw }}sfw/{{ name }}.{{ 'gif' if animated else 'png' }}
-	alt=":{{ name }}:"
-	title=":{{ name }}:">
-<td>{{ name }}
-<td>{{ caller() }}
+{% macro emotes(names, animated=false) %}
+<tr id={{ 'n' if nsfw }}sfw-{{ names[0] }}>
+<td>
+{% for name in names %}
+	<img
+		src=/img/nsfw-handbook/{{ 'n' if nsfw }}sfw/{{ name }}.{{ 'gif' if animated else 'png' }}
+		alt=":{{ name }}:"
+		title=":{{ name }}:">
+{% endfor %}	
+<td>{{ names|join(', ') }}
+<td>{% if caller is defined %}{{ caller() }}{% endif %}
 </tr>
+{% endmacro %}
+{% macro emote(name, animated=false) %}
+{% if caller is defined %}
+	{% set reason = caller() %}
+	{% call emotes([name], animated=animated) %}
+		{{ reason }}
+	{% endcall %}
+{% else %}
+	{{ emotes([name], animated=animated) }}
+{% endif %}
 {% endmacro %}
 <h2>SFW emotes</h2>
 {% set table_header %}
@@ -23,6 +45,7 @@ For future reference, I will document them here.
 {% endset %}
 <p>These are emotes that are questionably NSFW, but fall under "SFW" for the purposes of the bot.</p>
 <table>{{ table_header }}
+{% set nsfw = false %}
 {% call emote('sexmaster') %}
 	If the content of the emote is SFW, the name does not factor into it.
 {% endcall %}
@@ -34,5 +57,24 @@ For future reference, I will document them here.
 	Same reason as <a href=#sfw-gag>:gag:</a>.
 {% endcall %}
 </table>
-<h2>
+<h2>NSFW emotes</h2>
+<table>{{ table_header }}
+{% set nsfw = true %}
+{% call emote('ahegaoblob') %}
+	Depicts a post-orgasm face.
+{% endcall %}
+{{ emote('thiccass', animated=true) }}
+{{ emote('BlowJob') }}
+{{ emote('cock') }}
+{{ emote('Kannagasm') }}
+{{ emote('2bgasm') }}
+{% call emotes(['ass7', 'ass8', 'ass9']) %}
+	These were just made NSFW because they turn me on.
+{% endcall %}
+{% call emote('selfcest') %}
+	I'm not sure why this needs explanation.
+	It's two people having sex. It doesn't matter if they are really “the same person”.
+	The tentacles(?) are a little weird but whatever.
+{% endcall %}
+</table>
 {% endblock content %}
