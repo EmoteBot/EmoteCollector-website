@@ -39,9 +39,6 @@ For future reference, I will document them here.
 <p>These are emotes that are questionably NSFW, but fall under "SFW" for the purposes of the bot.</p>
 <table>{{ table_header }}
 {% set nsfw = false %}
-{% call emote('sexmaster') %}
-	If the content of the emote is SFW, the name does not factor into it.
-{% endcall %}
 {% call emote('gag') %}
 	This emote is from Spider-Man 3. It is therefore violent, not BDSM.
 	(The notion that violence is appropriate and sex is not is a discussion for another day…)
@@ -49,31 +46,34 @@ For future reference, I will document them here.
 {% call emote('ocknut') %}
 	Same reason as <a href=#sfw-gag>:gag:</a>.
 {% endcall %}
+{% call emote('sexmaster') %}
+	If the content of the emote is SFW, the name does not factor into it.
+{% endcall %}
 </table>
 <h2>NSFW emotes</h2>
 <table>{{ table_header }}
 {% set nsfw = true %}
-{% call emote('ahegaoblob') %}
-	Depicts a post-orgasm face.
-{% endcall %}
-{% call emote('catpeenlaser', animated=true) %}
-	Clearly depicts male genitalia.
-{% endcall %}
-{% call emote('cuzinho', animated=true) %}
-	Cartoon depiction of penetrative sex.
-{% endcall %}
-{{ emote('thiccass', animated=true) }}
-{{ emote('BlowJob') }}
-{{ emote('cock') }}
-{{ emote('Kannagasm') }}
 {{ emote('2bgasm') }}
 {% call emotes(['ass7', 'ass8', 'ass9']) %}
 	These were just made NSFW because they turn me on.
 {% endcall %}
+{% call emote('ahegaoblob') %}
+	Depicts a post-orgasm face.
+{% endcall %}
+{{ emote('BlowJob') }}
+{% call emote('catpeenlaser', animated=true) %}
+	Clearly depicts male genitalia.
+{% endcall %}
+{{ emote('cock') }}
+{% call emote('cuzinho', animated=true) %}
+	Cartoon depiction of penetrative sex.
+{% endcall %}
+{{ emote('Kannagasm') }}
 {% call emote('selfcest') %}
 	I'm not sure why this needs explanation.
 	It's two people having sex. It doesn't matter if they are really “the same person”.
 	The tentacles(?) are a little weird but whatever.
 {% endcall %}
+{{ emote('thiccass', animated=true) }}
 </table>
 {% endblock content %}
