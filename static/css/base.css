@@ -16,9 +16,5 @@ body {
 header {
 	text-align: center;}
 
-.table-container {
-	width: 100%;
-	overflow: scroll;}
-
 a {
 	text-decoration: underline;}

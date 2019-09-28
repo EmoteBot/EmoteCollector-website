@@ -53,7 +53,7 @@
 	</p>
 
 	{{ linked_header('Emote', 'emote-object') }}
-	<div class=table-container><table class="fields">
+	<table class="fields">
 		{% set fields_header %}
 		<thead><tr>
 			<th>Field name
@@ -78,14 +78,14 @@
 		<tr> <td>description? <td>String <td>
 		<tr> <td>nsfw <td>String
 			<td>one of "SFW", "SELF_NSFW", or "MOD_NSFW", indicating whether the emote is NSFW and who marked it as such
-	</table></div>
+	</table>
 
 	{{ linked_header('Emote with Usage', 'emote-with-usage-object') }}
 	Fields: everything in <a href="#emote-object">Emote</a>, plus:
-	<div class=table-container><table class="fields">
+	<table class="fields">
 		{{ fields_header }}
 		<tr> <td>usage <td>Integer <td>how many times the emote was used in the past 4 weeks
-	</table></div>
+	</table>
 
 	<h2>Endpoints</h2>
 
@@ -106,7 +106,7 @@
 	<p>
 		A <code>?</code> following the name of a parameter indicates that it need not be provided.
 	</p>
-	<div class=table-container><table class=query-params>
+	<table class=query-params>
 		<thead><tr>
 			<th>Parameter name
 			<th>Type
@@ -116,7 +116,7 @@
 		<tr> <td>allow_nsfw? <td>Boolean ("true" or "false" only) <td> Whether to include NSFW emotes in the result set. Defaults to true.
 		{% endif %}
 		{{ params }}
-	</table></div>
+	</table>
 	{% endif %}
 	{% endmacro %}
 
@@ -149,11 +149,11 @@
 
 	{% call endpoint('Edit Emote', 'edit-emote', 'PATCH', '/emote/{emote.name}', authed=True) %}
 		Requires JSON data:
-		<div class=table-container><table class=fields>
+		<table class=fields>
 			{{ fields_header }}
 			<tr> <td> name <td> string <td> new name for the emote
 			<tr> <td> description? <td> string <td> new description for the emote, or null to delete the description
-		</table></div>
+		</table>
 	{% endcall %}
 
 	{% call endpoint('Delete Emote', 'delete-emote', 'DELETE', '/emote/{emote.name}', authed=True) %}
