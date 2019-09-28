@@ -13,8 +13,12 @@ body {
 	margin: 0.2em auto;
 	padding: 2em;}
 
-header {
+.center, th, header {
 	text-align: center;}
 
 a {
 	text-decoration: underline;}
+
+img.emote {
+	max-height: 5rem;
+	max-width: 5rem;}

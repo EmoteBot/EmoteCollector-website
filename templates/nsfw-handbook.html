@@ -1,25 +1,17 @@
 {% extends 'base.html' %}
-{% block head %}
-	{{ super() }}
-	<style>
-		img {
-			margin: 0;
-			padding: 0;
-			border: 0;}
-	</style>
-{% endblock %}
 {% block title %}NSFW Handbook{% endblock title %}
 {% block content %}
 <p>Over the years, many emotes have tested the boundaries of NSFW content.
 For future reference, I will document them here.
 {% macro emotes(names, animated=false) %}
 <tr id={{ 'n' if nsfw }}sfw-{{ names[0] }}>
-<td>
+<td class=center>
 {% for name in names %}
 	<img
 		src=/img/nsfw-handbook/{{ 'n' if nsfw }}sfw/{{ name }}.{{ 'gif' if animated else 'png' }}
 		alt=":{{ name }}:"
-		title=":{{ name }}:">
+		title=":{{ name }}:"
+		class=emote></a>
 {% endfor %}	
 <td>{{ names|join(', ') }}
 <td>{% if caller is defined %}{{ caller() }}{% endif %}
