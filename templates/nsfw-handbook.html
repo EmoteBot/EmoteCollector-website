@@ -7,8 +7,9 @@ For future reference, I will document them here.
 <tr id={{ 'n' if nsfw }}sfw-{{ names[0] }}>
 <td class=center>
 {% for name in names %}
-	<img
-		src=/img/nsfw-handbook/{{ 'n' if nsfw }}sfw/{{ name }}.{{ 'gif' if animated else 'png' }}
+	{% set url %}/img/nsfw-handbook/{{ 'n' if nsfw }}sfw/{{ name }}.{{ 'gif' if animated else 'png' }}{% endset %}
+	<a href={{ url }}><img
+		src={{ url }}
 		alt=":{{ name }}:"
 		title=":{{ name }}:"
 		class=emote></a>
