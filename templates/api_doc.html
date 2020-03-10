@@ -163,6 +163,7 @@
 	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes', nsfw_param=True, params="""
 		<tr> <td> after? <td> {emote.name} <td> The name of the last emote that was sent as part of the last page.
 		<tr> <td> before? <td> {emote.name} <td> One page of results before this emote will be returned if specified.
+		<tr> <td> limit? <td> int <td> How many results to return, at most. Defaults to 100. May not exceed 250.
 	""")
 	%}
 		List of <a href="#emote-object">emote objects</a>. This endpoint is paginated. After the first page, you

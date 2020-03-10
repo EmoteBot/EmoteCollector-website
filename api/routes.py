@@ -138,11 +138,12 @@ async def list_(request):
 	allow_nsfw = _should_allow_nsfw(request)
 	after = request.rel_url.query.get('after')
 	before = request.rel_url.query.get('before')
+	limit = int(request.rel_url.query.get('limit', 100))
 	if before is not None and after is not None:
 		raise HTTPBadRequest('only one of before, after may be specified')
 
 	results = list(map(_marshal_emote,
-		await db_cog.all_emotes_keyset(allow_nsfw=allow_nsfw, after=after, before=before)))
+		await db_cog.all_emotes_keyset(allow_nsfw=allow_nsfw, after=after, before=before, limit=limit)))
 	return web.json_response(results)
 
 @routes.get(API_PREFIX+'/emotes/{author}')
