@@ -161,8 +161,8 @@
 	{% endcall %}
 
 	{% call endpoint('List Emotes', 'list-emotes', 'GET', '/emotes', nsfw_param=True, params="""
-		<tr> <td> after? <td> {emote.name} <td> The name of the last emote that was sent as part of the last page.
-		<tr> <td> before? <td> {emote.name} <td> One page of results before this emote will be returned if specified.
+		<tr> <td> after? <td> {emote.name} <td> The name of the last emote that was sent as part of the last page. If this is the empty string, fetch the first page.
+		<tr> <td> before? <td> {emote.name} <td> One page of results before this emote will be returned if specified. If this is the empty string, fetch the last page.
 		<tr> <td> limit? <td> int <td> How many results to return, at most. Defaults to 100. May not exceed 250.
 	""")
 	%}
@@ -177,7 +177,8 @@
 		'GET', '/emotes/{emote.author}',
 		nsfw_param=True)
 	%}
-		List of <a href="#emote-object">emote objects</a> that were created by <code>emote.author</code>.
+		<a href="#list-emotes">Paginated</a> list of <a href="#emote-object">emote objects</a>
+		that were created by <code>emote.author</code>.
 	{% endcall %}
 
 	{% call endpoint('Search Emotes', 'search-emotes', 'GET', '/search/{query}', nsfw_param=True) %}
