@@ -2,13 +2,14 @@
 # encoding: utf-8
 
 import asyncio
-from functools import partial
+from functools import partial, wraps
 from urllib.parse import parse_qsl
 
 import jinja2
 from aiohttp import web
 from emote_collector import utils
 from emote_collector.utils import emote as emote_utils
+from emote_collector.utils import errors as emote_errors
 from yarl import URL
 
 from bot import *
@@ -55,6 +56,18 @@ async def index(request):
 
 ONE_YEAR = 60 * 60 * 24 * 365
 
+def check_18plus(request):
+	if '18+' not in request.cookies:
+		url = URL('/confirm-18+').with_query(next=str(request.rel_url))
+		raise web.HTTPTemporaryRedirect(url)
+
+def require_18plus(route):
+	@wraps(route)
+	async def wrapped(request):
+		check_18plus(request)
+		return await route(request)
+	return wrapped
+
 @routes.get('/confirm-18+')
 async def confirm_18plus(request):
 	target = request.query.get('next')
@@ -75,11 +88,8 @@ async def confirm_18plus(request):
 	return response
 
 @routes.get('/nsfw-handbook')
+@require_18plus
 async def nsfw_handbook(request):
-	if '18+' not in request.cookies:
-		# incredible that yarl.URL.with_query does not accept yarl.URLs lmao
-		url = URL('/confirm-18+').with_query(dict(next=str(request.rel_url)))
-		return web.HTTPTemporaryRedirect(url)
 	return await render_template('nsfw-handbook.html')
 
 @routes.get('/list')
@@ -87,17 +97,32 @@ async def nsfw_handbook(request):
 async def list_(request):
 	author = _int_or_none(request.match_info.get('author'))
 	allow_nsfw = 'allow_nsfw' in request.query
+	if allow_nsfw:
+		check_18plus(request)
 	before = request.query.get('before')
 	after = request.query.get('after')
-	if before is not None and after is not None:
-		raise web.HTTPBadRequest(reason='only one of before, after may be specified')
-
+	page = parse_keyset_params(before, after)
 	return await render_template('list.html',
-		emotes=await db_cog.all_emotes_keyset(author, allow_nsfw=allow_nsfw, before=before, after=after),
+		emotes=await db_cog.all_emotes_keyset(author, allow_nsfw=allow_nsfw, page=page),
 		author=author,
 		request=request,
 		url=url(request),
-		allow_nsfw=allow_nsfw)
+		allow_nsfw=allow_nsfw,
+	)
+
+@routes.get('/emote/{name:[A-Za-z0-9_]{2,}}')
+async def emote(request):
+	name = request.match_info['name']
+	try:
+		emote = await db_cog.get_emote(name)
+	except emote_errors.EmoteNotFoundError:
+		raise web.HTTPNotFound(body='emote not found')
+
+	if emote.is_nsfw:
+		check_18plus(request)
+
+	emote.usage = await db_cog.get_emote_usage(emote)
+	return await render_template('emote.html', emote=emote)
 
 @routes.get('/e0-list')
 async def e0_list(request):

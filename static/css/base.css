@@ -16,6 +16,9 @@ body {
 table {
 	margin-bottom: 1rem;}
 
+.align-left {
+	text-align: left;}
+
 .center, th, header {
 	text-align: center;}
 

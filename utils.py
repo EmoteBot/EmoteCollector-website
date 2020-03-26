@@ -15,7 +15,7 @@ def parse_keyset_params(before, after):
 		return PageSpecifier.first()
 
 	if before is not None and after is not None:
-		raise HTTPBadRequest('only one of before, after may be specified')
+		raise web.HTTPBadRequest(body='only one of before, after may be supplied')
 
 	if not before and not after:
 		reference = None

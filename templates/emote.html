@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}{{ emote.name }}{% endblock %}
+{% block head %}
+	{{ super() }}
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="{{ emote.name }} &emdash; Emote Collector">
+	{% if emote.description %}
+		<meta property="og:description" content="{{ emote.description|e }}">
+	{% endif %}
+	<meta property="og:url" content="{{ url }}">
+	<meta property="og:image" content="{{ emote.url }}">
+{% endblock %}
+
+{% macro dt(dt) %}
+	{# timespec='milliseconds' for HTML compliance #}
+	<time datetime="{{ dt.isoformat(timespec='milliseconds') }}" data-timestamp="{{ dt.timestamp() * 1000 }}">
+		{{ dt.strftime('%Y-%m-%d %H:%M:%S') }} UTC
+	</time>
+{% endmacro %}
+
+{% block content %}
+	<div class=center><img class=center src="{{ emote.url }}" alt=":{{ emote.name }}:"></div>
+	{% if emote.description %}<p>{{ emote.description }}</p>{% endif %}
+	<table>
+		<tr><th class=align-left width="20%">Name<td>{{ emote.name }}
+		<tr>
+			<th class=align-left>Author ID
+			<td>
+				<a
+					href="/list/{{ emote.author }}{% if emote.is_nsfw %}?allow_nsfw{% endif %}"
+					title="More emotes by this author"
+				>
+					{{ emote.author }}
+				</a>
+		<tr><th class=align-left>Recent usage count<td>{{ emote.usage }}
+		<tr><th class=align-left>Created<td>{{ dt(emote.created) }}
+		{% if emote.modified %}
+		<tr><th class=align-left>Last modified<td>{{ dt(emote.modified) }}
+		{% endif %}
+		<tr><th class=align-left>Preserved?
+			<td>
+			{% if emote.preserve %}
+				<img
+				src=/img/jar.png
+				alt="A jar of preserves"
+				title="This emote has been preserved and will not be removed if it goes unused.">
+			{% endif %}
+	</table>
+
+	<script>
+		const zfill2 = x => x.toString().padStart(2, '0');
+		for (let date of document.querySelectorAll('time')) {
+			let dt = new Date(parseFloat(date.attributes['data-timestamp'].value));
+			date.textContent = `
+				${dt.getFullYear()}-${zfill2(dt.getMonth())}-${zfill2(dt.getDate())}
+				${zfill2(dt.getHours())}:${zfill2(dt.getMinutes())}:${zfill2(dt.getSeconds())}
+			`;
+		}
+	</script>
+{% endblock %}
