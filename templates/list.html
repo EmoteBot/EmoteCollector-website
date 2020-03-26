@@ -46,10 +46,22 @@
 	{% endif %}
 
 	{% set navigation %}
+		<a class=no-underline href="{{ update_query_param(request, 'before', after='') }}" title="First page">⏮︎</a>
 		{% if emotes %}
-			<a href="{{ update_query_param(request, 'after', before=emotes[0].name)}}">Previous page</a>
-			<a href="{{ update_query_param(request, 'before', after=emotes[-1].name)}}">Next page</a>
+			<a 
+				class=no-underline
+				href="{{ update_query_param(request, 'after', before=emotes[0].name) }}"
+				title="Previous page"
+			>
+				⬅️︎</a>
+			<a
+				class=no-underline
+				href="{{ update_query_param(request, 'before', after=emotes[-1].name) }}"
+				title="Next page"
+			>
+				➡︎</a>
 		{% endif %}
+		<a class=no-underline href="{{ update_query_param(request, 'after', before='') }}" title="Last page">⏭︎</a>
 	{% endset %}
 	<br>
 	{{ navigation }}

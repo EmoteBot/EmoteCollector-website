@@ -13,11 +13,17 @@ body {
 	margin: 0.2em auto;
 	padding: 2em;}
 
+table {
+	margin-bottom: 1rem;}
+
 .center, th, header {
 	text-align: center;}
 
 a {
 	text-decoration: underline;}
+
+a.no-underline {
+	text-decoration: inherit;}
 
 img.emote {
 	max-height: 5rem;

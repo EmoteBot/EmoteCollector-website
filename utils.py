@@ -4,6 +4,31 @@ import urllib.parse
 import jinja2
 from aiohttp import web
 
+from emote_collector.extensions.db import PageSpecifier, PageDirection
+
+def parse_keyset_params(before, after):
+	# before='' means last
+	# after='' means first
+
+	if before is None and after is None:
+		# default to first page
+		return PageSpecifier.first()
+
+	if before is not None and after is not None:
+		raise HTTPBadRequest('only one of before, after may be specified')
+
+	if not before and not after:
+		reference = None
+	else:
+		reference = before or after
+
+	if before is not None:
+		direction = PageDirection.before
+	if after is not None:
+		direction = PageDirection.after
+
+	return PageSpecifier(direction, reference)
+
 def url(request, *, include_path=True):
 	return (
 		f'{request.headers["X-Forwarded-Proto"]}://{request.headers["X-Forwarded-For"]}'

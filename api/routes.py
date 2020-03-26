@@ -5,9 +5,9 @@ from aiohttp import web
 import discord
 from emote_collector.utils import errors as emote_collector_errors
 from emote_collector import utils as emote_collector_utils
-from emote_collector.extensions.db import PageSpecifier, PageDirection
 
 from bot import *
+from utils import parse_keyset_params
 from .constants import API_PREFIX
 from .errors import *
 
@@ -159,29 +159,6 @@ async def list_by_author(request):
 	limit = int(request.rel_url.query.get('limit', 100))
 	results = list(map(_marshal_emote, await db_cog.all_emotes_keyset(author_id, allow_nsfw=allow_nsfw, page=page, limit=limit)))
 	return web.json_response(results)
-
-def parse_keyset_params(before, after):
-	# before='' means last
-	# after='' means first
-
-	if before is None and after is None:
-		# default to first page
-		return PageSpecifier.first()
-
-	if before is not None and after is not None:
-		raise HTTPBadRequest('only one of before, after may be specified')
-
-	if not before and not after:
-		reference = None
-	else:
-		reference = before or after
-
-	if before is not None:
-		direction = PageDirection.before
-	if after is not None:
-		direction = PageDirection.after
-
-	return PageSpecifier(direction, reference)
 
 @routes.get(API_PREFIX+'/search/{query}')
 async def search(request):

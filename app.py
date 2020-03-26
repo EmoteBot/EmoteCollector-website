@@ -12,7 +12,7 @@ from emote_collector.utils import emote as emote_utils
 from yarl import URL
 
 from bot import *
-from utils import is_safe_url, urlencode, url, render_template
+from utils import is_safe_url, urlencode, url, render_template, parse_keyset_params
 
 app = web.Application()
 routes = web.RouteTableDef()
