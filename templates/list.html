@@ -38,7 +38,7 @@
 
 	{% if not allow_nsfw %}
 		<a href="{{ add_query_param(request, allow_nsfw='') }}">
-			Show all emotes (possibly NSFW)
+			Include NSFW emotes
 		</a>
 	{% else %}
 		<a href="{{ remove_query_param(request, 'allow_nsfw') }}">
@@ -95,7 +95,7 @@
 
 			<td lang=""><span class="data"><a href="/emote/{{ emote.name }}" title="More details">{{ emote.name }}</span></td>
 
-			{% if author is none %}
+			{% if author is sameas none %}
 				<td><a href="{{ request.path }}/{{ emote.author }}?{{ request.query_string }}"><span class="data">{{ emote.author }}</span></a></td>
 			{% endif %}
 
