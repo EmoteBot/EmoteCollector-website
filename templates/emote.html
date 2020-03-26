@@ -22,9 +22,8 @@
 	<div class=center><img class=center src="{{ emote.url }}" alt=":{{ emote.name }}:"></div>
 	{% if emote.description %}<p>{{ emote.description }}</p>{% endif %}
 	<table>
-		<tr><th class=align-left width="20%">Name<td>{{ emote.name }}
 		<tr>
-			<th class=align-left>Author ID
+			<th class=align-left width="20%">Author ID
 			<td>
 				<a
 					href="/list/{{ emote.author }}{% if emote.is_nsfw %}?allow_nsfw{% endif %}"
