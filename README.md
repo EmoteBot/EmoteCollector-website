@@ -1,6 +1,6 @@
 # Emote Collector Website
 
-This is the code that powers https://emoji-connoisseur.python-for.life.
+This is the code that powers https://ec.emote.bot.
 
 ## Installation
 
