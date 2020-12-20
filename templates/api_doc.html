@@ -134,7 +134,7 @@
 		If the emote already exists, returns 409 Conflict.<br>
 		If retrieving the URL took too long, returns 400 Bad Request.<br>
 		If resizing the image took too long, returns 413 Request Entity Too Large.<br>
-		If the image is not a JPEG, GIF, or PNG, returns 415 Unsupported Media Type.
+		If the image is not a JPEG, GIF, WEBP, or PNG, returns 415 Unsupported Media Type.
 	{% endcall %}
 
 	{% call endpoint('Create Emote From Bytes', 'create-emote-bytes', 'PUT', '/emote/{name}', authed=True) %}
@@ -144,7 +144,7 @@
 		Returns the <a href="#emote-object">emote object</a> that was created on success.<br>
 		If the emote already exists, returns 409 Conflict.<br>
 		If resizing the image took too long, returns 413 Request Entity Too Large.<br>
-		If the image is not a JPEG, GIF, or PNG, returns 415 Unsupported Media Type.
+		If the image is not a JPEG, GIF, WEBP, or PNG, returns 415 Unsupported Media Type.
 	{% endcall %}
 
 	{% call endpoint('Edit Emote', 'edit-emote', 'PATCH', '/emote/{emote.name}', authed=True) %}
