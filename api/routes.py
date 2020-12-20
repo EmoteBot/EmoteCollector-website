@@ -61,6 +61,12 @@ def requires_auth(func):
 
 	return authed_route
 
+def disabled(func):
+	"""Replace the route with one that always raises Forbidden"""
+	async def route(request):
+		raise HTTPForbidden('Sorry, this endpoint is disabled. Check the documentation for details.')
+	return route
+
 @routes.get(API_PREFIX+'/emote/{name}')
 @db_route
 async def emote(request):
@@ -103,6 +109,7 @@ async def delete_emote(request):
 	return emote_response(await db_cog.remove_emote(name, user_id))
 
 @routes.put(API_PREFIX+'/emote/{name}/{url}')
+@disabled
 @requires_auth
 async def create_emote(request):
 	name, url = map(request.match_info.get, ('name', 'url'))
@@ -118,6 +125,7 @@ async def create_emote(request):
 		raise HTTPBadRequest('invalid URL')
 
 @routes.put(API_PREFIX+'/emote/{name}')
+@disabled
 @requires_auth
 async def create_emote_from_data(request):
 	if not request.can_read_body:
