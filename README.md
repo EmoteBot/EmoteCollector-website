@@ -18,7 +18,7 @@ config.py
 
 <pre>
 Emote Collector Website provides a list of emotes and an API for the Emote Collector bot.
-Copyright © 2018 Benjamin Mintz
+Copyright © 2020 io mintz
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
