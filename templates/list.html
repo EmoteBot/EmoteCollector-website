@@ -52,12 +52,14 @@
 				class=no-underline
 				href="{{ update_query_param(request, 'after', before=emotes[0].name) }}"
 				title="Previous page"
+				rel=prev
 			>
 				⬅️︎</a>
 			<a
 				class=no-underline
 				href="{{ update_query_param(request, 'before', after=emotes[-1].name) }}"
 				title="Next page"
+				rel=next
 			>
 				➡︎</a>
 		{% endif %}
